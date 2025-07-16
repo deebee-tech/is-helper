@@ -1,6 +1,6 @@
 {
    "name": "@deebeetech/is-helper",
-   "version": "1.1.0",
+   "version": "1.0.0",
    "description": "A collection of \"is\"-style helpers to help solidify if something \"is\" something else. Has no dependencies and uses only raw JavaScript methodology.",
    "homepage": "https://github.com/deebee-tech/is-helper",
    "license": "MIT",
