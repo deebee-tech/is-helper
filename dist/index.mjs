@@ -113,6 +113,6 @@ const is = {
 	}
 };
 //#endregion
-module.exports = is;
+export { is as default };
 
-//# sourceMappingURL=index.cjs.map
+//# sourceMappingURL=index.mjs.map

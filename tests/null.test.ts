@@ -1,686 +1,686 @@
 import { describe, expect, it } from "vitest";
-import IsHelper from "../src";
+import is from "../src";
 
-describe("isNull", () => {
+describe("is.null", () => {
    describe("true test cases", () => {
       it("should return true for null", () => {
-         expect(IsHelper.isNull(null)).toBe(true);
+         expect(is.null(null)).toBe(true);
       });
    });
 
    describe("false test cases", () => {
       it("should return false for a number", () => {
-         expect(IsHelper.isNull(1)).toBe(false);
+         expect(is.null(1)).toBe(false);
       });
 
       it("should return false for a negative number", () => {
-         expect(IsHelper.isNull(-1)).toBe(false);
+         expect(is.null(-1)).toBe(false);
       });
 
       it("should return false for a decimal number", () => {
-         expect(IsHelper.isNull(1.1)).toBe(false);
+         expect(is.null(1.1)).toBe(false);
       });
 
       it("should return false for a negative decimal number", () => {
-         expect(IsHelper.isNull(-1.1)).toBe(false);
+         expect(is.null(-1.1)).toBe(false);
       });
 
       it("should return false for a number string", () => {
-         expect(IsHelper.isNull("1")).toBe(false);
+         expect(is.null("1")).toBe(false);
       });
 
       it("should return false for a negative number string", () => {
-         expect(IsHelper.isNull("-1")).toBe(false);
+         expect(is.null("-1")).toBe(false);
       });
 
       it("should return false for a decimal number string", () => {
-         expect(IsHelper.isNull("1.1")).toBe(false);
+         expect(is.null("1.1")).toBe(false);
       });
 
       it("should return false for a negative decimal number string", () => {
-         expect(IsHelper.isNull("-1.1")).toBe(false);
+         expect(is.null("-1.1")).toBe(false);
       });
 
       it("should return false for an empty string", () => {
-         expect(IsHelper.isNull("")).toBe(false);
+         expect(is.null("")).toBe(false);
       });
 
       it("should return false for an whitespace string", () => {
-         expect(IsHelper.isNull(" ")).toBe(false);
+         expect(is.null(" ")).toBe(false);
       });
 
       it("should return false for undefined", () => {
-         expect(IsHelper.isNull(undefined)).toBe(false);
+         expect(is.null(undefined)).toBe(false);
       });
 
       it("should return false for a string", () => {
-         expect(IsHelper.isNull("a")).toBe(false);
+         expect(is.null("a")).toBe(false);
       });
 
       it("should return false for a boolean", () => {
-         expect(IsHelper.isNull(true)).toBe(false);
+         expect(is.null(true)).toBe(false);
       });
 
       it("should return false for an empty object", () => {
-         expect(IsHelper.isNull({})).toBe(false);
+         expect(is.null({})).toBe(false);
       });
 
       it("should return false for an object", () => {
-         expect(IsHelper.isNull({ a: 1 })).toBe(false);
+         expect(is.null({ a: 1 })).toBe(false);
       });
 
       it("should return false for a function", () => {
-         expect(IsHelper.isNull(() => {})).toBe(false);
+         expect(is.null(() => {})).toBe(false);
       });
 
       it("should return false for a Map", () => {
-         expect(IsHelper.isNull(new Map())).toBe(false);
+         expect(is.null(new Map())).toBe(false);
       });
 
       it("should return false for a Set", () => {
-         expect(IsHelper.isNull(new Set())).toBe(false);
+         expect(is.null(new Set())).toBe(false);
       });
 
       it("should return false for an empty array", () => {
-         expect(IsHelper.isNull([])).toBe(false);
+         expect(is.null([])).toBe(false);
       });
 
       it("should return false for an array", () => {
-         expect(IsHelper.isNull([1])).toBe(false);
+         expect(is.null([1])).toBe(false);
       });
 
       it("should return false for a RegExp", () => {
-         expect(IsHelper.isNull(/.*/)).toBe(false);
+         expect(is.null(/.*/)).toBe(false);
       });
 
       it("should return false for a Symbol", () => {
-         expect(IsHelper.isNull(Symbol())).toBe(false);
+         expect(is.null(Symbol())).toBe(false);
       });
 
       it("should return false for a Date", () => {
-         expect(IsHelper.isNull(new Date())).toBe(false);
+         expect(is.null(new Date())).toBe(false);
       });
 
       it("should return false for a Date object created with a string", () => {
-         expect(IsHelper.isNull(new Date("2021-01-01T00:00:00.000Z"))).toBe(false);
+         expect(is.null(new Date("2021-01-01T00:00:00.000Z"))).toBe(false);
       });
 
       it("should return false for a Date object created with an epoch timestamp", () => {
-         expect(IsHelper.isNull(new Date(1735689600))).toBe(false);
+         expect(is.null(new Date(1735689600))).toBe(false);
       });
 
       it("should return false for a Uint8Array", () => {
-         expect(IsHelper.isNull(new Uint8Array())).toBe(false);
+         expect(is.null(new Uint8Array())).toBe(false);
       });
 
       it("should return false for a Uint16Array", () => {
-         expect(IsHelper.isNull(new Uint16Array())).toBe(false);
+         expect(is.null(new Uint16Array())).toBe(false);
       });
 
       it("should return false for a Uint32Array", () => {
-         expect(IsHelper.isNull(new Uint32Array())).toBe(false);
+         expect(is.null(new Uint32Array())).toBe(false);
       });
 
       it("should return false for a Uint8ClampedArray", () => {
-         expect(IsHelper.isNull(new Uint8ClampedArray())).toBe(false);
+         expect(is.null(new Uint8ClampedArray())).toBe(false);
       });
 
       it("should return false for a BigInt64Array", () => {
-         expect(IsHelper.isNull(new BigInt64Array())).toBe(false);
+         expect(is.null(new BigInt64Array())).toBe(false);
       });
 
       it("should return false for a Int8Array", () => {
-         expect(IsHelper.isNull(new Int8Array())).toBe(false);
+         expect(is.null(new Int8Array())).toBe(false);
       });
 
       it("should return false for a Int16Array", () => {
-         expect(IsHelper.isNull(new Int16Array())).toBe(false);
+         expect(is.null(new Int16Array())).toBe(false);
       });
 
       it("should return false for a Int32Array", () => {
-         expect(IsHelper.isNull(new Int32Array())).toBe(false);
+         expect(is.null(new Int32Array())).toBe(false);
       });
 
       it("should return false for a BigUint64Array", () => {
-         expect(IsHelper.isNull(new BigUint64Array())).toBe(false);
+         expect(is.null(new BigUint64Array())).toBe(false);
       });
 
       it("should return false for a Float32Array", () => {
-         expect(IsHelper.isNull(new Float32Array())).toBe(false);
+         expect(is.null(new Float32Array())).toBe(false);
       });
 
       it("should return false for a Float64Array", () => {
-         expect(IsHelper.isNull(new Float64Array())).toBe(false);
+         expect(is.null(new Float64Array())).toBe(false);
       });
 
       it("should return false for a WeakSet", () => {
-         expect(IsHelper.isNull(new WeakSet())).toBe(false);
+         expect(is.null(new WeakSet())).toBe(false);
       });
 
       it("should return false for a WeakMap", () => {
-         expect(IsHelper.isNull(new WeakMap())).toBe(false);
+         expect(is.null(new WeakMap())).toBe(false);
       });
 
       it("should return false for a BigInt", () => {
-         expect(IsHelper.isNull(BigInt(1))).toBe(false);
+         expect(is.null(BigInt(1))).toBe(false);
       });
 
       it("should return false for a BigInt string", () => {
-         expect(IsHelper.isNull("1n")).toBe(false);
+         expect(is.null("1n")).toBe(false);
       });
    });
 });
 
-describe("isUndefined", () => {
+describe("is.undefined", () => {
    describe("true test cases", () => {
       it("should return true for undefined", () => {
-         expect(IsHelper.isUndefined(undefined)).toBe(true);
+         expect(is.undefined(undefined)).toBe(true);
       });
    });
 
    describe("false test cases", () => {
       it("should return false for null", () => {
-         expect(IsHelper.isUndefined(null)).toBe(false);
+         expect(is.undefined(null)).toBe(false);
       });
 
       it("should return false for a number", () => {
-         expect(IsHelper.isUndefined(1)).toBe(false);
+         expect(is.undefined(1)).toBe(false);
       });
 
       it("should return false for a negative number", () => {
-         expect(IsHelper.isUndefined(-1)).toBe(false);
+         expect(is.undefined(-1)).toBe(false);
       });
 
       it("should return false for a decimal number", () => {
-         expect(IsHelper.isUndefined(1.1)).toBe(false);
+         expect(is.undefined(1.1)).toBe(false);
       });
 
       it("should return false for a negative decimal number", () => {
-         expect(IsHelper.isUndefined(-1.1)).toBe(false);
+         expect(is.undefined(-1.1)).toBe(false);
       });
 
       it("should return false for a number string", () => {
-         expect(IsHelper.isUndefined("1")).toBe(false);
+         expect(is.undefined("1")).toBe(false);
       });
 
       it("should return false for a negative number string", () => {
-         expect(IsHelper.isUndefined("-1")).toBe(false);
+         expect(is.undefined("-1")).toBe(false);
       });
 
       it("should return false for a decimal number string", () => {
-         expect(IsHelper.isUndefined("1.1")).toBe(false);
+         expect(is.undefined("1.1")).toBe(false);
       });
 
       it("should return false for a negative decimal number string", () => {
-         expect(IsHelper.isUndefined("-1.1")).toBe(false);
+         expect(is.undefined("-1.1")).toBe(false);
       });
 
       it("should return false for an empty string", () => {
-         expect(IsHelper.isUndefined("")).toBe(false);
+         expect(is.undefined("")).toBe(false);
       });
 
       it("should return false for an whitespace string", () => {
-         expect(IsHelper.isUndefined(" ")).toBe(false);
+         expect(is.undefined(" ")).toBe(false);
       });
 
       it("should return false for a string", () => {
-         expect(IsHelper.isUndefined("a")).toBe(false);
+         expect(is.undefined("a")).toBe(false);
       });
 
       it("should return false for a boolean", () => {
-         expect(IsHelper.isUndefined(true)).toBe(false);
+         expect(is.undefined(true)).toBe(false);
       });
 
       it("should return false for an empty object", () => {
-         expect(IsHelper.isUndefined({})).toBe(false);
+         expect(is.undefined({})).toBe(false);
       });
 
       it("should return false for an object", () => {
-         expect(IsHelper.isUndefined({ a: 1 })).toBe(false);
+         expect(is.undefined({ a: 1 })).toBe(false);
       });
 
       it("should return false for a function", () => {
-         expect(IsHelper.isUndefined(() => {})).toBe(false);
+         expect(is.undefined(() => {})).toBe(false);
       });
 
       it("should return false for a Map", () => {
-         expect(IsHelper.isUndefined(new Map())).toBe(false);
+         expect(is.undefined(new Map())).toBe(false);
       });
 
       it("should return false for a Set", () => {
-         expect(IsHelper.isUndefined(new Set())).toBe(false);
+         expect(is.undefined(new Set())).toBe(false);
       });
 
       it("should return false for an empty array", () => {
-         expect(IsHelper.isUndefined([])).toBe(false);
+         expect(is.undefined([])).toBe(false);
       });
 
       it("should return false for an array", () => {
-         expect(IsHelper.isUndefined([1])).toBe(false);
+         expect(is.undefined([1])).toBe(false);
       });
 
       it("should return false for a RegExp", () => {
-         expect(IsHelper.isUndefined(/.*/)).toBe(false);
+         expect(is.undefined(/.*/)).toBe(false);
       });
 
       it("should return false for a Symbol", () => {
-         expect(IsHelper.isUndefined(Symbol())).toBe(false);
+         expect(is.undefined(Symbol())).toBe(false);
       });
 
       it("should return false for a Date", () => {
-         expect(IsHelper.isUndefined(new Date())).toBe(false);
+         expect(is.undefined(new Date())).toBe(false);
       });
 
       it("should return false for a Date object created with a string", () => {
-         expect(IsHelper.isUndefined(new Date("2021-01-01T00:00:00.000Z"))).toBe(false);
+         expect(is.undefined(new Date("2021-01-01T00:00:00.000Z"))).toBe(false);
       });
 
       it("should return false for a Date object created with an epoch timestamp", () => {
-         expect(IsHelper.isUndefined(new Date(1735689600))).toBe(false);
+         expect(is.undefined(new Date(1735689600))).toBe(false);
       });
 
       it("should return false for a Uint8Array", () => {
-         expect(IsHelper.isUndefined(new Uint8Array())).toBe(false);
+         expect(is.undefined(new Uint8Array())).toBe(false);
       });
 
       it("should return false for a Uint16Array", () => {
-         expect(IsHelper.isUndefined(new Uint16Array())).toBe(false);
+         expect(is.undefined(new Uint16Array())).toBe(false);
       });
 
       it("should return false for a Uint32Array", () => {
-         expect(IsHelper.isUndefined(new Uint32Array())).toBe(false);
+         expect(is.undefined(new Uint32Array())).toBe(false);
       });
 
       it("should return false for a Uint8ClampedArray", () => {
-         expect(IsHelper.isUndefined(new Uint8ClampedArray())).toBe(false);
+         expect(is.undefined(new Uint8ClampedArray())).toBe(false);
       });
 
       it("should return false for a BigInt64Array", () => {
-         expect(IsHelper.isUndefined(new BigInt64Array())).toBe(false);
+         expect(is.undefined(new BigInt64Array())).toBe(false);
       });
 
       it("should return false for a Int8Array", () => {
-         expect(IsHelper.isUndefined(new Int8Array())).toBe(false);
+         expect(is.undefined(new Int8Array())).toBe(false);
       });
 
       it("should return false for a Int16Array", () => {
-         expect(IsHelper.isUndefined(new Int16Array())).toBe(false);
+         expect(is.undefined(new Int16Array())).toBe(false);
       });
 
       it("should return false for a Int32Array", () => {
-         expect(IsHelper.isUndefined(new Int32Array())).toBe(false);
+         expect(is.undefined(new Int32Array())).toBe(false);
       });
 
       it("should return false for a BigUint64Array", () => {
-         expect(IsHelper.isUndefined(new BigUint64Array())).toBe(false);
+         expect(is.undefined(new BigUint64Array())).toBe(false);
       });
 
       it("should return false for a Float32Array", () => {
-         expect(IsHelper.isUndefined(new Float32Array())).toBe(false);
+         expect(is.undefined(new Float32Array())).toBe(false);
       });
 
       it("should return false for a Float64Array", () => {
-         expect(IsHelper.isUndefined(new Float64Array())).toBe(false);
+         expect(is.undefined(new Float64Array())).toBe(false);
       });
 
       it("should return false for a WeakSet", () => {
-         expect(IsHelper.isUndefined(new WeakSet())).toBe(false);
+         expect(is.undefined(new WeakSet())).toBe(false);
       });
 
       it("should return false for a WeakMap", () => {
-         expect(IsHelper.isUndefined(new WeakMap())).toBe(false);
+         expect(is.undefined(new WeakMap())).toBe(false);
       });
 
       it("should return false for a BigInt", () => {
-         expect(IsHelper.isUndefined(BigInt(1))).toBe(false);
+         expect(is.undefined(BigInt(1))).toBe(false);
       });
 
       it("should return false for a BigInt string", () => {
-         expect(IsHelper.isUndefined("1n")).toBe(false);
+         expect(is.undefined("1n")).toBe(false);
       });
    });
 });
 
-describe("isNullOrUndefined", () => {
+describe("is.nil", () => {
    describe("true test cases", () => {
       it("should return true for undefined", () => {
-         expect(IsHelper.isNullOrUndefined(undefined)).toBe(true);
+         expect(is.nil(undefined)).toBe(true);
       });
 
       it("should return true for null", () => {
-         expect(IsHelper.isNullOrUndefined(null)).toBe(true);
+         expect(is.nil(null)).toBe(true);
       });
    });
 
    describe("false test cases", () => {
       it("should return false for a number", () => {
-         expect(IsHelper.isNullOrUndefined(1)).toBe(false);
+         expect(is.nil(1)).toBe(false);
       });
 
       it("should return false for a negative number", () => {
-         expect(IsHelper.isNullOrUndefined(-1)).toBe(false);
+         expect(is.nil(-1)).toBe(false);
       });
 
       it("should return false for a decimal number", () => {
-         expect(IsHelper.isNullOrUndefined(1.1)).toBe(false);
+         expect(is.nil(1.1)).toBe(false);
       });
 
       it("should return false for a negative decimal number", () => {
-         expect(IsHelper.isNullOrUndefined(-1.1)).toBe(false);
+         expect(is.nil(-1.1)).toBe(false);
       });
 
       it("should return false for a number string", () => {
-         expect(IsHelper.isNullOrUndefined("1")).toBe(false);
+         expect(is.nil("1")).toBe(false);
       });
 
       it("should return false for a negative number string", () => {
-         expect(IsHelper.isNullOrUndefined("-1")).toBe(false);
+         expect(is.nil("-1")).toBe(false);
       });
 
       it("should return false for a decimal number string", () => {
-         expect(IsHelper.isNullOrUndefined("1.1")).toBe(false);
+         expect(is.nil("1.1")).toBe(false);
       });
 
       it("should return false for a negative decimal number string", () => {
-         expect(IsHelper.isNullOrUndefined("-1.1")).toBe(false);
+         expect(is.nil("-1.1")).toBe(false);
       });
 
       it("should return false for an empty string", () => {
-         expect(IsHelper.isNullOrUndefined("")).toBe(false);
+         expect(is.nil("")).toBe(false);
       });
 
       it("should return false for an whitespace string", () => {
-         expect(IsHelper.isNullOrUndefined(" ")).toBe(false);
+         expect(is.nil(" ")).toBe(false);
       });
 
       it("should return false for a string", () => {
-         expect(IsHelper.isNullOrUndefined("a")).toBe(false);
+         expect(is.nil("a")).toBe(false);
       });
 
       it("should return false for a boolean", () => {
-         expect(IsHelper.isNullOrUndefined(true)).toBe(false);
+         expect(is.nil(true)).toBe(false);
       });
 
       it("should return false for an empty object", () => {
-         expect(IsHelper.isNullOrUndefined({})).toBe(false);
+         expect(is.nil({})).toBe(false);
       });
 
       it("should return false for an object", () => {
-         expect(IsHelper.isNullOrUndefined({ a: 1 })).toBe(false);
+         expect(is.nil({ a: 1 })).toBe(false);
       });
 
       it("should return false for a function", () => {
-         expect(IsHelper.isNullOrUndefined(() => {})).toBe(false);
+         expect(is.nil(() => {})).toBe(false);
       });
 
       it("should return false for a Map", () => {
-         expect(IsHelper.isNullOrUndefined(new Map())).toBe(false);
+         expect(is.nil(new Map())).toBe(false);
       });
 
       it("should return false for a Set", () => {
-         expect(IsHelper.isNullOrUndefined(new Set())).toBe(false);
+         expect(is.nil(new Set())).toBe(false);
       });
 
       it("should return false for an empty array", () => {
-         expect(IsHelper.isNullOrUndefined([])).toBe(false);
+         expect(is.nil([])).toBe(false);
       });
 
       it("should return false for an array", () => {
-         expect(IsHelper.isNullOrUndefined([1])).toBe(false);
+         expect(is.nil([1])).toBe(false);
       });
 
       it("should return false for a RegExp", () => {
-         expect(IsHelper.isNullOrUndefined(/.*/)).toBe(false);
+         expect(is.nil(/.*/)).toBe(false);
       });
 
       it("should return false for a Symbol", () => {
-         expect(IsHelper.isNullOrUndefined(Symbol())).toBe(false);
+         expect(is.nil(Symbol())).toBe(false);
       });
 
       it("should return false for a Date", () => {
-         expect(IsHelper.isNullOrUndefined(new Date())).toBe(false);
+         expect(is.nil(new Date())).toBe(false);
       });
 
       it("should return false for a Date object created with a string", () => {
-         expect(IsHelper.isNullOrUndefined(new Date("2021-01-01T00:00:00.000Z"))).toBe(false);
+         expect(is.nil(new Date("2021-01-01T00:00:00.000Z"))).toBe(false);
       });
 
       it("should return false for a Date object created with an epoch timestamp", () => {
-         expect(IsHelper.isNullOrUndefined(new Date(1735689600))).toBe(false);
+         expect(is.nil(new Date(1735689600))).toBe(false);
       });
 
       it("should return false for a Uint8Array", () => {
-         expect(IsHelper.isNullOrUndefined(new Uint8Array())).toBe(false);
+         expect(is.nil(new Uint8Array())).toBe(false);
       });
 
       it("should return false for a Uint16Array", () => {
-         expect(IsHelper.isNullOrUndefined(new Uint16Array())).toBe(false);
+         expect(is.nil(new Uint16Array())).toBe(false);
       });
 
       it("should return false for a Uint32Array", () => {
-         expect(IsHelper.isNullOrUndefined(new Uint32Array())).toBe(false);
+         expect(is.nil(new Uint32Array())).toBe(false);
       });
 
       it("should return false for a Uint8ClampedArray", () => {
-         expect(IsHelper.isNullOrUndefined(new Uint8ClampedArray())).toBe(false);
+         expect(is.nil(new Uint8ClampedArray())).toBe(false);
       });
 
       it("should return false for a BigInt64Array", () => {
-         expect(IsHelper.isNullOrUndefined(new BigInt64Array())).toBe(false);
+         expect(is.nil(new BigInt64Array())).toBe(false);
       });
 
       it("should return false for a Int8Array", () => {
-         expect(IsHelper.isNullOrUndefined(new Int8Array())).toBe(false);
+         expect(is.nil(new Int8Array())).toBe(false);
       });
 
       it("should return false for a Int16Array", () => {
-         expect(IsHelper.isNullOrUndefined(new Int16Array())).toBe(false);
+         expect(is.nil(new Int16Array())).toBe(false);
       });
 
       it("should return false for a Int32Array", () => {
-         expect(IsHelper.isNullOrUndefined(new Int32Array())).toBe(false);
+         expect(is.nil(new Int32Array())).toBe(false);
       });
 
       it("should return false for a BigUint64Array", () => {
-         expect(IsHelper.isNullOrUndefined(new BigUint64Array())).toBe(false);
+         expect(is.nil(new BigUint64Array())).toBe(false);
       });
 
       it("should return false for a Float32Array", () => {
-         expect(IsHelper.isNullOrUndefined(new Float32Array())).toBe(false);
+         expect(is.nil(new Float32Array())).toBe(false);
       });
 
       it("should return false for a Float64Array", () => {
-         expect(IsHelper.isNullOrUndefined(new Float64Array())).toBe(false);
+         expect(is.nil(new Float64Array())).toBe(false);
       });
 
       it("should return false for a WeakSet", () => {
-         expect(IsHelper.isNullOrUndefined(new WeakSet())).toBe(false);
+         expect(is.nil(new WeakSet())).toBe(false);
       });
 
       it("should return false for a WeakMap", () => {
-         expect(IsHelper.isNullOrUndefined(new WeakMap())).toBe(false);
+         expect(is.nil(new WeakMap())).toBe(false);
       });
 
       it("should return false for a BigInt", () => {
-         expect(IsHelper.isNullOrUndefined(BigInt(1))).toBe(false);
+         expect(is.nil(BigInt(1))).toBe(false);
       });
 
       it("should return false for a BigInt string", () => {
-         expect(IsHelper.isNullOrUndefined("1n")).toBe(false);
+         expect(is.nil("1n")).toBe(false);
       });
    });
 });
 
-describe("isNullOrUndefinedOrEmptyStringOrWhitespace", () => {
+describe("is.blank", () => {
    describe("true test cases", () => {
       it("should return true for an empty string", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("")).toBe(true);
+         expect(is.blank("")).toBe(true);
       });
 
       it("should return true for a string with whitespace", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(" ")).toBe(true);
+         expect(is.blank(" ")).toBe(true);
       });
 
       it("should return true for a string with a newline character", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("\n")).toBe(true);
+         expect(is.blank("\n")).toBe(true);
       });
 
       it("should return true for a string with a tab character", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("\t")).toBe(true);
+         expect(is.blank("\t")).toBe(true);
       });
 
       it("should return true for a string with a newline and tab character", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("\n\t")).toBe(true);
+         expect(is.blank("\n\t")).toBe(true);
       });
 
       it("should return true for a string with a tab and newline character", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("\t\n")).toBe(true);
+         expect(is.blank("\t\n")).toBe(true);
       });
 
       it("should return true for a string with a tab and newline character and whitespace", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("\t\n ")).toBe(true);
+         expect(is.blank("\t\n ")).toBe(true);
       });
 
       it("should return true for a null", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(null)).toBe(true);
+         expect(is.blank(null)).toBe(true);
       });
 
       it("should return true for an undefined", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(undefined)).toBe(true);
+         expect(is.blank(undefined)).toBe(true);
       });
    });
 
    describe("false test cases", () => {
       it("should return false for a string with a value", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("a")).toBe(false);
+         expect(is.blank("a")).toBe(false);
       });
 
       it("should return false for a string with whitespace at the beginning", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(" a")).toBe(false);
+         expect(is.blank(" a")).toBe(false);
       });
 
       it("should return false for a string with whitespace at the end", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("a ")).toBe(false);
+         expect(is.blank("a ")).toBe(false);
       });
 
       it("should return false for a string with whitespace in the middle", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("a b")).toBe(false);
+         expect(is.blank("a b")).toBe(false);
       });
 
       it("should return false for a string with a tab and newline character and a value", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("\t\na")).toBe(false);
+         expect(is.blank("\t\na")).toBe(false);
       });
 
       it("should return false for a string with a tab and newline character and whitespace at the beginning", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace("\t\n a")).toBe(false);
+         expect(is.blank("\t\n a")).toBe(false);
       });
 
       it("should return false for boolean true", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(true)).toBe(false);
+         expect(is.blank(true)).toBe(false);
       });
 
       it("should return false for boolean false", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(false)).toBe(false);
+         expect(is.blank(false)).toBe(false);
       });
 
       it("should return false for a number", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(1)).toBe(false);
+         expect(is.blank(1)).toBe(false);
       });
 
       it("should return false for an empty object", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace({})).toBe(false);
+         expect(is.blank({})).toBe(false);
       });
 
       it("should return false for an object", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace({ a: 1 })).toBe(false);
+         expect(is.blank({ a: 1 })).toBe(false);
       });
 
       it("should return false for a function", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(() => {})).toBe(false);
+         expect(is.blank(() => {})).toBe(false);
       });
 
       it("should return false for a Map", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Map())).toBe(false);
+         expect(is.blank(new Map())).toBe(false);
       });
 
       it("should return false for a Set", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Set())).toBe(false);
+         expect(is.blank(new Set())).toBe(false);
       });
 
       it("should return false for a Date", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Date())).toBe(false);
+         expect(is.blank(new Date())).toBe(false);
       });
 
       it("should return false for a RegExp", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(/.*/)).toBe(false);
+         expect(is.blank(/.*/)).toBe(false);
       });
 
       it("should return false for a Symbol", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(Symbol())).toBe(false);
+         expect(is.blank(Symbol())).toBe(false);
       });
 
       it("should return false for an Error", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Error())).toBe(false);
+         expect(is.blank(new Error())).toBe(false);
       });
 
       it("should return false for a Promise", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(Promise.resolve())).toBe(false);
+         expect(is.blank(Promise.resolve())).toBe(false);
       });
 
       it("should return false for an empty array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace([])).toBe(false);
+         expect(is.blank([])).toBe(false);
       });
 
       it("should return false for an array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace([1])).toBe(false);
+         expect(is.blank([1])).toBe(false);
       });
 
       it("should return false for a Uint8Array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Uint8Array())).toBe(false);
+         expect(is.blank(new Uint8Array())).toBe(false);
       });
 
       it("should return false for a Uint16Array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Uint16Array())).toBe(false);
+         expect(is.blank(new Uint16Array())).toBe(false);
       });
 
       it("should return false for a Uint32Array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Uint32Array())).toBe(false);
+         expect(is.blank(new Uint32Array())).toBe(false);
       });
 
       it("should return false for a Int8Array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Int8Array())).toBe(false);
+         expect(is.blank(new Int8Array())).toBe(false);
       });
 
       it("should return false for a Int16Array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Int16Array())).toBe(false);
+         expect(is.blank(new Int16Array())).toBe(false);
       });
 
       it("should return false for a Int32Array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Int32Array())).toBe(false);
+         expect(is.blank(new Int32Array())).toBe(false);
       });
 
       it("should return false for a Float32Array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Float32Array())).toBe(false);
+         expect(is.blank(new Float32Array())).toBe(false);
       });
 
       it("should return false for a Float64Array", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new Float64Array())).toBe(false);
+         expect(is.blank(new Float64Array())).toBe(false);
       });
 
       it("should return false for a WeakMap", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new WeakMap())).toBe(false);
+         expect(is.blank(new WeakMap())).toBe(false);
       });
 
       it("should return false for a WeakSet", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(new WeakSet())).toBe(false);
+         expect(is.blank(new WeakSet())).toBe(false);
       });
 
       it("should return false for a BigInt", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(BigInt(1))).toBe(false);
+         expect(is.blank(BigInt(1))).toBe(false);
       });
 
       it("should return false for a Symbol", () => {
-         expect(IsHelper.isNullOrUndefinedOrEmptyStringOrWhitespace(Symbol())).toBe(false);
+         expect(is.blank(Symbol())).toBe(false);
       });
    });
 });

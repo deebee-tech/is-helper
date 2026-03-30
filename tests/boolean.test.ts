@@ -1,405 +1,405 @@
 import { describe, expect, it } from "vitest";
-import IsHelper from "../src";
+import is from "../src";
 
-describe("isBoolean", () => {
+describe("is.boolean", () => {
    describe("true test cases", () => {
       it("should return true for a true boolean", () => {
-         expect(IsHelper.isBoolean(true)).toBe(true);
+         expect(is.boolean(true)).toBe(true);
       });
 
       it("should return true for a false boolean", () => {
-         expect(IsHelper.isBoolean(false)).toBe(true);
+         expect(is.boolean(false)).toBe(true);
       });
 
       it("should return true for a string of 'true'", () => {
-         expect(IsHelper.isBoolean("true")).toBe(true);
+         expect(is.boolean("true")).toBe(true);
       });
 
       it("should return true for a string of 'false'", () => {
-         expect(IsHelper.isBoolean("false")).toBe(true);
+         expect(is.boolean("false")).toBe(true);
       });
 
       it("should return true for a string of 'TRUE'", () => {
-         expect(IsHelper.isBoolean("TRUE")).toBe(true);
+         expect(is.boolean("TRUE")).toBe(true);
       });
 
       it("should return true for a string of 'FALSE'", () => {
-         expect(IsHelper.isBoolean("FALSE")).toBe(true);
+         expect(is.boolean("FALSE")).toBe(true);
       });
 
       it("should return true for a string of '1'", () => {
-         expect(IsHelper.isBoolean("1")).toBe(true);
+         expect(is.boolean("1")).toBe(true);
       });
 
       it("should return true for a string of '0'", () => {
-         expect(IsHelper.isBoolean("0")).toBe(true);
+         expect(is.boolean("0")).toBe(true);
       });
 
       it("should return true for a number of 1", () => {
-         expect(IsHelper.isBoolean(1)).toBe(true);
+         expect(is.boolean(1)).toBe(true);
       });
 
       it("should return true for a number of 0", () => {
-         expect(IsHelper.isBoolean(0)).toBe(true);
+         expect(is.boolean(0)).toBe(true);
       });
 
       it("should return true for a string of 'y'", () => {
-         expect(IsHelper.isBoolean("y")).toBe(true);
+         expect(is.boolean("y")).toBe(true);
       });
 
       it("should return true for a string of 'n'", () => {
-         expect(IsHelper.isBoolean("n")).toBe(true);
+         expect(is.boolean("n")).toBe(true);
       });
 
       it("should return true for a string of 'yes'", () => {
-         expect(IsHelper.isBoolean("yes")).toBe(true);
+         expect(is.boolean("yes")).toBe(true);
       });
 
       it("should return true for a string of 'no'", () => {
-         expect(IsHelper.isBoolean("no")).toBe(true);
+         expect(is.boolean("no")).toBe(true);
       });
 
       it("should return true for a string of 'Y'", () => {
-         expect(IsHelper.isBoolean("Y")).toBe(true);
+         expect(is.boolean("Y")).toBe(true);
       });
 
       it("should return true for a string of 'N'", () => {
-         expect(IsHelper.isBoolean("N")).toBe(true);
+         expect(is.boolean("N")).toBe(true);
       });
 
       it("should return true for a string of 'YES'", () => {
-         expect(IsHelper.isBoolean("YES")).toBe(true);
+         expect(is.boolean("YES")).toBe(true);
       });
 
       it("should return true for a string of 'NO'", () => {
-         expect(IsHelper.isBoolean("NO")).toBe(true);
+         expect(is.boolean("NO")).toBe(true);
       });
    });
 
    describe("false test cases", () => {
       it("should return false for a string", () => {
-         expect(IsHelper.isBoolean("")).toBe(false);
+         expect(is.boolean("")).toBe(false);
       });
 
       it("should return false for a non-binary number", () => {
-         expect(IsHelper.isBoolean(2)).toBe(false);
+         expect(is.boolean(2)).toBe(false);
       });
 
       it("should return false for a null", () => {
-         expect(IsHelper.isBoolean(null)).toBe(false);
+         expect(is.boolean(null)).toBe(false);
       });
 
       it("should return false for an undefined", () => {
-         expect(IsHelper.isBoolean(undefined)).toBe(false);
+         expect(is.boolean(undefined)).toBe(false);
       });
 
       it("should return false for an empty object", () => {
-         expect(IsHelper.isBoolean({})).toBe(false);
+         expect(is.boolean({})).toBe(false);
       });
 
       it("should return false for an object", () => {
-         expect(IsHelper.isBoolean({ a: 1 })).toBe(false);
+         expect(is.boolean({ a: 1 })).toBe(false);
       });
 
       it("should return false for a function", () => {
-         expect(IsHelper.isBoolean(() => {})).toBe(false);
+         expect(is.boolean(() => {})).toBe(false);
       });
 
       it("should return false for a Map", () => {
-         expect(IsHelper.isBoolean(new Map())).toBe(false);
+         expect(is.boolean(new Map())).toBe(false);
       });
 
       it("should return false for a Set", () => {
-         expect(IsHelper.isBoolean(new Set())).toBe(false);
+         expect(is.boolean(new Set())).toBe(false);
       });
 
       it("should return false for a Date", () => {
-         expect(IsHelper.isBoolean(new Date())).toBe(false);
+         expect(is.boolean(new Date())).toBe(false);
       });
 
       it("should return false for a RegExp", () => {
-         expect(IsHelper.isBoolean(/.*/)).toBe(false);
+         expect(is.boolean(/.*/)).toBe(false);
       });
 
       it("should return false for a Symbol", () => {
-         expect(IsHelper.isBoolean(Symbol())).toBe(false);
+         expect(is.boolean(Symbol())).toBe(false);
       });
 
       it("should return false for a Date", () => {
-         expect(IsHelper.isBoolean(new Date())).toBe(false);
+         expect(is.boolean(new Date())).toBe(false);
       });
 
       it("should return false for an empty array", () => {
-         expect(IsHelper.isBoolean([])).toBe(false);
+         expect(is.boolean([])).toBe(false);
       });
 
       it("should return false for an array", () => {
-         expect(IsHelper.isBoolean([1])).toBe(false);
+         expect(is.boolean([1])).toBe(false);
       });
 
       it("should return false for an array or booleans", () => {
-         expect(IsHelper.isBoolean([true])).toBe(false);
+         expect(is.boolean([true])).toBe(false);
       });
 
       it("should return false for an Error", () => {
-         expect(IsHelper.isBoolean(new Error())).toBe(false);
+         expect(is.boolean(new Error())).toBe(false);
       });
 
       it("should return false for a Promise", () => {
-         expect(IsHelper.isBoolean(Promise.resolve())).toBe(false);
+         expect(is.boolean(Promise.resolve())).toBe(false);
       });
 
       it("should return false for a WeakMap", () => {
-         expect(IsHelper.isBoolean(new WeakMap())).toBe(false);
+         expect(is.boolean(new WeakMap())).toBe(false);
       });
 
       it("should return false for a WeakSet", () => {
-         expect(IsHelper.isBoolean(new WeakSet())).toBe(false);
+         expect(is.boolean(new WeakSet())).toBe(false);
       });
 
       it("should return false for a Float32Array", () => {
-         expect(IsHelper.isBoolean(new Float32Array())).toBe(false);
+         expect(is.boolean(new Float32Array())).toBe(false);
       });
 
       it("should return false for a Float64Array", () => {
-         expect(IsHelper.isBoolean(new Float64Array())).toBe(false);
+         expect(is.boolean(new Float64Array())).toBe(false);
       });
 
       it("should return false for an Int8Array", () => {
-         expect(IsHelper.isBoolean(new Int8Array())).toBe(false);
+         expect(is.boolean(new Int8Array())).toBe(false);
       });
 
       it("should return false for an Int16Array", () => {
-         expect(IsHelper.isBoolean(new Int16Array())).toBe(false);
+         expect(is.boolean(new Int16Array())).toBe(false);
       });
 
       it("should return false for an Int32Array", () => {
-         expect(IsHelper.isBoolean(new Int32Array())).toBe(false);
+         expect(is.boolean(new Int32Array())).toBe(false);
       });
 
       it("should return false for a Uint8Array", () => {
-         expect(IsHelper.isBoolean(new Uint8Array())).toBe(false);
+         expect(is.boolean(new Uint8Array())).toBe(false);
       });
 
       it("should return false for a Uint16Array", () => {
-         expect(IsHelper.isBoolean(new Uint16Array())).toBe(false);
+         expect(is.boolean(new Uint16Array())).toBe(false);
       });
 
       it("should return false for a Uint32Array", () => {
-         expect(IsHelper.isBoolean(new Uint32Array())).toBe(false);
+         expect(is.boolean(new Uint32Array())).toBe(false);
       });
 
       it("should return false for a Uint8ClampedArray", () => {
-         expect(IsHelper.isBoolean(new Uint8ClampedArray())).toBe(false);
+         expect(is.boolean(new Uint8ClampedArray())).toBe(false);
       });
 
       it("should return false for a BigInt64Array", () => {
-         expect(IsHelper.isBoolean(new BigInt64Array())).toBe(false);
+         expect(is.boolean(new BigInt64Array())).toBe(false);
       });
 
       it("should return false for a BigUint64Array", () => {
-         expect(IsHelper.isBoolean(new BigUint64Array())).toBe(false);
+         expect(is.boolean(new BigUint64Array())).toBe(false);
       });
    });
 });
 
-describe("getBooleanValue", () => {
+describe("is.boolean.value", () => {
    describe("true test cases", () => {
       it("should return true for a true boolean", () => {
-         expect(IsHelper.getBooleanValue(true)).toBe(true);
+         expect(is.boolean.value(true)).toBe(true);
       });
 
       it("should return true for a string of 'true'", () => {
-         expect(IsHelper.getBooleanValue("true")).toBe(true);
+         expect(is.boolean.value("true")).toBe(true);
       });
 
       it("should return true for a string of 'TRUE'", () => {
-         expect(IsHelper.getBooleanValue("TRUE")).toBe(true);
+         expect(is.boolean.value("TRUE")).toBe(true);
       });
 
       it("should return true for a string of '1'", () => {
-         expect(IsHelper.getBooleanValue("1")).toBe(true);
+         expect(is.boolean.value("1")).toBe(true);
       });
 
       it("should return true for a number of 1", () => {
-         expect(IsHelper.getBooleanValue(1)).toBe(true);
+         expect(is.boolean.value(1)).toBe(true);
       });
 
       it("should return true for a string of 'y'", () => {
-         expect(IsHelper.getBooleanValue("y")).toBe(true);
+         expect(is.boolean.value("y")).toBe(true);
       });
 
       it("should return true for a string of 'yes'", () => {
-         expect(IsHelper.getBooleanValue("yes")).toBe(true);
+         expect(is.boolean.value("yes")).toBe(true);
       });
 
       it("should return true for a string of 'Y'", () => {
-         expect(IsHelper.getBooleanValue("Y")).toBe(true);
+         expect(is.boolean.value("Y")).toBe(true);
       });
 
       it("should return true for a string of 'YES'", () => {
-         expect(IsHelper.getBooleanValue("YES")).toBe(true);
+         expect(is.boolean.value("YES")).toBe(true);
       });
    });
    describe("false test cases", () => {
       it("should return true for a false boolean", () => {
-         expect(IsHelper.getBooleanValue(false)).toBe(false);
+         expect(is.boolean.value(false)).toBe(false);
       });
 
       it("should return true for a string of 'false'", () => {
-         expect(IsHelper.getBooleanValue("false")).toBe(false);
+         expect(is.boolean.value("false")).toBe(false);
       });
 
       it("should return true for a string of 'FALSE'", () => {
-         expect(IsHelper.getBooleanValue("FALSE")).toBe(false);
+         expect(is.boolean.value("FALSE")).toBe(false);
       });
 
       it("should return true for a string of '0'", () => {
-         expect(IsHelper.getBooleanValue("0")).toBe(false);
+         expect(is.boolean.value("0")).toBe(false);
       });
 
       it("should return true for a number of 0", () => {
-         expect(IsHelper.getBooleanValue(0)).toBe(false);
+         expect(is.boolean.value(0)).toBe(false);
       });
 
       it("should return true for a string of 'n'", () => {
-         expect(IsHelper.getBooleanValue("n")).toBe(false);
+         expect(is.boolean.value("n")).toBe(false);
       });
 
       it("should return true for a string of 'no'", () => {
-         expect(IsHelper.getBooleanValue("no")).toBe(false);
+         expect(is.boolean.value("no")).toBe(false);
       });
 
       it("should return true for a string of 'N'", () => {
-         expect(IsHelper.getBooleanValue("N")).toBe(false);
+         expect(is.boolean.value("N")).toBe(false);
       });
 
       it("should return true for a string of 'NO'", () => {
-         expect(IsHelper.getBooleanValue("NO")).toBe(false);
+         expect(is.boolean.value("NO")).toBe(false);
       });
 
       it("should return false for a string", () => {
-         expect(IsHelper.getBooleanValue("")).toBe(false);
+         expect(is.boolean.value("")).toBe(false);
       });
 
       it("should return false for a non-binary number", () => {
-         expect(IsHelper.getBooleanValue(2)).toBe(false);
+         expect(is.boolean.value(2)).toBe(false);
       });
 
       it("should return false for a null", () => {
-         expect(IsHelper.getBooleanValue(null)).toBe(false);
+         expect(is.boolean.value(null)).toBe(false);
       });
 
       it("should return false for an undefined", () => {
-         expect(IsHelper.getBooleanValue(undefined)).toBe(false);
+         expect(is.boolean.value(undefined)).toBe(false);
       });
 
       it("should return false for an empty object", () => {
-         expect(IsHelper.getBooleanValue({})).toBe(false);
+         expect(is.boolean.value({})).toBe(false);
       });
 
       it("should return false for an object", () => {
-         expect(IsHelper.getBooleanValue({ a: 1 })).toBe(false);
+         expect(is.boolean.value({ a: 1 })).toBe(false);
       });
 
       it("should return false for a function", () => {
-         expect(IsHelper.getBooleanValue(() => {})).toBe(false);
+         expect(is.boolean.value(() => {})).toBe(false);
       });
 
       it("should return false for a Map", () => {
-         expect(IsHelper.getBooleanValue(new Map())).toBe(false);
+         expect(is.boolean.value(new Map())).toBe(false);
       });
 
       it("should return false for a Set", () => {
-         expect(IsHelper.getBooleanValue(new Set())).toBe(false);
+         expect(is.boolean.value(new Set())).toBe(false);
       });
 
       it("should return false for a Date", () => {
-         expect(IsHelper.getBooleanValue(new Date())).toBe(false);
+         expect(is.boolean.value(new Date())).toBe(false);
       });
 
       it("should return false for a RegExp", () => {
-         expect(IsHelper.getBooleanValue(/.*/)).toBe(false);
+         expect(is.boolean.value(/.*/)).toBe(false);
       });
 
       it("should return false for a Symbol", () => {
-         expect(IsHelper.getBooleanValue(Symbol())).toBe(false);
+         expect(is.boolean.value(Symbol())).toBe(false);
       });
 
       it("should return false for a Date", () => {
-         expect(IsHelper.getBooleanValue(new Date())).toBe(false);
+         expect(is.boolean.value(new Date())).toBe(false);
       });
 
       it("should return false for an empty array", () => {
-         expect(IsHelper.getBooleanValue([])).toBe(false);
+         expect(is.boolean.value([])).toBe(false);
       });
 
       it("should return false for an array", () => {
-         expect(IsHelper.getBooleanValue([1])).toBe(false);
+         expect(is.boolean.value([1])).toBe(false);
       });
 
       it("should return false for an array or booleans", () => {
-         expect(IsHelper.getBooleanValue([true])).toBe(false);
+         expect(is.boolean.value([true])).toBe(false);
       });
 
       it("should return false for an Error", () => {
-         expect(IsHelper.getBooleanValue(new Error())).toBe(false);
+         expect(is.boolean.value(new Error())).toBe(false);
       });
 
       it("should return false for a Promise", () => {
-         expect(IsHelper.getBooleanValue(Promise.resolve())).toBe(false);
+         expect(is.boolean.value(Promise.resolve())).toBe(false);
       });
 
       it("should return false for a WeakMap", () => {
-         expect(IsHelper.getBooleanValue(new WeakMap())).toBe(false);
+         expect(is.boolean.value(new WeakMap())).toBe(false);
       });
 
       it("should return false for a WeakSet", () => {
-         expect(IsHelper.getBooleanValue(new WeakSet())).toBe(false);
+         expect(is.boolean.value(new WeakSet())).toBe(false);
       });
 
       it("should return false for a Float32Array", () => {
-         expect(IsHelper.getBooleanValue(new Float32Array())).toBe(false);
+         expect(is.boolean.value(new Float32Array())).toBe(false);
       });
 
       it("should return false for a Float64Array", () => {
-         expect(IsHelper.getBooleanValue(new Float64Array())).toBe(false);
+         expect(is.boolean.value(new Float64Array())).toBe(false);
       });
 
       it("should return false for an Int8Array", () => {
-         expect(IsHelper.getBooleanValue(new Int8Array())).toBe(false);
+         expect(is.boolean.value(new Int8Array())).toBe(false);
       });
 
       it("should return false for an Int16Array", () => {
-         expect(IsHelper.getBooleanValue(new Int16Array())).toBe(false);
+         expect(is.boolean.value(new Int16Array())).toBe(false);
       });
 
       it("should return false for an Int32Array", () => {
-         expect(IsHelper.getBooleanValue(new Int32Array())).toBe(false);
+         expect(is.boolean.value(new Int32Array())).toBe(false);
       });
 
       it("should return false for a Uint8Array", () => {
-         expect(IsHelper.getBooleanValue(new Uint8Array())).toBe(false);
+         expect(is.boolean.value(new Uint8Array())).toBe(false);
       });
 
       it("should return false for a Uint16Array", () => {
-         expect(IsHelper.getBooleanValue(new Uint16Array())).toBe(false);
+         expect(is.boolean.value(new Uint16Array())).toBe(false);
       });
 
       it("should return false for a Uint32Array", () => {
-         expect(IsHelper.getBooleanValue(new Uint32Array())).toBe(false);
+         expect(is.boolean.value(new Uint32Array())).toBe(false);
       });
 
       it("should return false for a Uint8ClampedArray", () => {
-         expect(IsHelper.getBooleanValue(new Uint8ClampedArray())).toBe(false);
+         expect(is.boolean.value(new Uint8ClampedArray())).toBe(false);
       });
 
       it("should return false for a BigInt64Array", () => {
-         expect(IsHelper.getBooleanValue(new BigInt64Array())).toBe(false);
+         expect(is.boolean.value(new BigInt64Array())).toBe(false);
       });
 
       it("should return false for a BigUint64Array", () => {
-         expect(IsHelper.getBooleanValue(new BigUint64Array())).toBe(false);
+         expect(is.boolean.value(new BigUint64Array())).toBe(false);
       });
    });
 });
