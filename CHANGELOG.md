@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/deebee-tech/is-helper/compare/v2.0.0...v2.0.1) (2026-03-30)
+
+### Bug Fixes
+
+* **repo:** Fix for creating a release in Github part 2. ([bb2de81](https://github.com/deebee-tech/is-helper/commit/bb2de8140292315a315d005f8f4c1b62a1bc9af8))
+* **repo:** Fix for creating a release in GitHub. ([e0aea3a](https://github.com/deebee-tech/is-helper/commit/e0aea3a277a796139cf41c4df0b6de9fd3d470df))
+
 ## [2.0.0](https://github.com/deebee-tech/is-helper/compare/v1.0.1...v2.0.0) (2026-03-30)
 
 ### ⚠ BREAKING CHANGES
