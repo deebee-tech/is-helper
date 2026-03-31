@@ -45,49 +45,49 @@ describe("is.defined", () => {
    });
 });
 
-describe("is.blank", () => {
+describe("is.nothing", () => {
    it("should return true for null", () => {
-      expect(is.blank(null)).toBe(true);
+      expect(is.nothing(null)).toBe(true);
    });
 
    it("should return true for undefined", () => {
-      expect(is.blank(undefined)).toBe(true);
+      expect(is.nothing(undefined)).toBe(true);
    });
 
    it("should return true for empty string", () => {
-      expect(is.blank("")).toBe(true);
+      expect(is.nothing("")).toBe(true);
    });
 
    it("should return true for whitespace string", () => {
-      expect(is.blank(" ")).toBe(true);
+      expect(is.nothing(" ")).toBe(true);
    });
 
    it("should return true for tab string", () => {
-      expect(is.blank("\t")).toBe(true);
+      expect(is.nothing("\t")).toBe(true);
    });
 
    it("should return true for newline string", () => {
-      expect(is.blank("\n")).toBe(true);
+      expect(is.nothing("\n")).toBe(true);
    });
 
    it("should return false for a string with content", () => {
-      expect(is.blank("hello")).toBe(false);
+      expect(is.nothing("hello")).toBe(false);
    });
 
    it("should return false for 0", () => {
-      expect(is.blank(0)).toBe(false);
+      expect(is.nothing(0)).toBe(false);
    });
 
    it("should return false for false", () => {
-      expect(is.blank(false)).toBe(false);
+      expect(is.nothing(false)).toBe(false);
    });
 
    it("should return false for an object", () => {
-      expect(is.blank({})).toBe(false);
+      expect(is.nothing({})).toBe(false);
    });
 
    it("should return false for an array", () => {
-      expect(is.blank([])).toBe(false);
+      expect(is.nothing([])).toBe(false);
    });
 });
 
@@ -145,14 +145,14 @@ describe("is.any", () => {
    });
 });
 
-describe("is.every", () => {
+describe("is.all", () => {
    it("should return true when all checks pass", () => {
-      const isNonBlankString = is.every(is.string, (v) => !is.string.blank(v));
+      const isNonBlankString = is.all(is.string, (v) => !is.string.blank(v));
       expect(isNonBlankString("hello")).toBe(true);
    });
 
    it("should return false when any check fails", () => {
-      const isNonBlankString = is.every(is.string, (v) => !is.string.blank(v));
+      const isNonBlankString = is.all(is.string, (v) => !is.string.blank(v));
       expect(isNonBlankString("")).toBe(false);
       expect(isNonBlankString(" ")).toBe(false);
       expect(isNonBlankString(42)).toBe(false);
@@ -160,7 +160,7 @@ describe("is.every", () => {
    });
 
    it("should work with number sub-properties", () => {
-      const isPositiveInt = is.every(is.number.integer, is.number.positive);
+      const isPositiveInt = is.all(is.number.integer, is.number.positive);
       expect(isPositiveInt(5)).toBe(true);
       expect(isPositiveInt(-5)).toBe(false);
       expect(isPositiveInt(1.5)).toBe(false);
@@ -168,7 +168,7 @@ describe("is.every", () => {
    });
 
    it("should work inline without storing", () => {
-      expect(is.every(is.string, (v) => !is.string.blank(v))("hello")).toBe(true);
-      expect(is.every(is.string, (v) => !is.string.blank(v))("")).toBe(false);
+      expect(is.all(is.string, (v) => !is.string.blank(v))("hello")).toBe(true);
+      expect(is.all(is.string, (v) => !is.string.blank(v))("")).toBe(false);
    });
 });

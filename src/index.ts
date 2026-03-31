@@ -97,7 +97,7 @@ export interface IsObject {
    plain<T = unknown>(value: unknown): value is Record<string | number | symbol, T>;
 }
 
-/** A predicate function that accepts an `unknown` value and returns a `boolean`. Used with {@linkcode Is.any} and {@linkcode Is.every}. */
+/** A predicate function that accepts an `unknown` value and returns a `boolean`. Used with {@linkcode Is.any} and {@linkcode Is.all}. */
 export type CheckFn = (value: unknown) => boolean;
 
 /**
@@ -123,7 +123,7 @@ export interface Is {
    /** Returns `true` if the value is not `null` and not `undefined`. */
    defined(value: unknown): boolean;
    /** Returns `true` if the value is `null`, `undefined`, an empty string, or a whitespace-only string. */
-   blank(value: unknown): value is null | undefined | "";
+   nothing(value: unknown): value is null | undefined | "";
    /** Array type-checking utilities. See {@linkcode IsArray}. */
    array: IsArray;
    /** String type-checking utilities. See {@linkcode IsString}. */
@@ -143,8 +143,8 @@ export interface Is {
    ipv4(value: unknown): boolean;
    /** Creates a check that returns `true` if **any** of the given checks pass for a value. */
    any(...checks: CheckFn[]): CheckFn;
-   /** Creates a check that returns `true` only if **every** given check passes for a value. */
-   every(...checks: CheckFn[]): CheckFn;
+   /** Creates a check that returns `true` only if **all** given checks pass for a value. */
+   all(...checks: CheckFn[]): CheckFn;
 }
 
 // ---------------------------------------------------------------------------
@@ -324,7 +324,7 @@ const is: Is = {
       return value !== null && value !== undefined;
    },
 
-   blank(value: unknown): value is null | undefined | "" {
+   nothing(value: unknown): value is null | undefined | "" {
       return this.nil(value) || isString.blank(value);
    },
 
@@ -348,7 +348,7 @@ const is: Is = {
       return (value: unknown) => checks.some((check) => check(value));
    },
 
-   every(...checks: CheckFn[]): CheckFn {
+   all(...checks: CheckFn[]): CheckFn {
       return (value: unknown) => checks.every((check) => check(value));
    },
 };

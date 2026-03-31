@@ -30,10 +30,10 @@ is.nil(0);          // false
 is.defined(0);         // true  — anything that isn't null/undefined
 is.defined(null);      // false
 
-is.blank(null);        // true  — null, undefined, empty string, or whitespace
-is.blank("");          // true
-is.blank("   ");       // true
-is.blank("hello");     // false
+is.nothing(null);        // true  — null, undefined, empty string, or whitespace
+is.nothing("");          // true
+is.nothing("   ");       // true
+is.nothing("hello");     // false
 ```
 
 ### Strings
@@ -154,7 +154,7 @@ is.ipv4("not an ip");       // false
 
 ### Combinators
 
-`is.any()` and `is.every()` let you compose checks into reusable validators.
+`is.any()` and `is.all()` let you compose checks into reusable validators.
 
 ```typescript
 const isStringOrNumber = is.any(is.string, is.number);
@@ -162,7 +162,7 @@ isStringOrNumber("hello");  // true
 isStringOrNumber(42);       // true
 isStringOrNumber(null);     // false
 
-const isPositiveInt = is.every(is.number.positive, is.number.integer);
+const isPositiveInt = is.all(is.number.positive, is.number.integer);
 isPositiveInt(5);     // true
 isPositiveInt(-3);    // false
 isPositiveInt(2.5);   // false

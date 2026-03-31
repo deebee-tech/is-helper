@@ -511,176 +511,176 @@ describe("is.nil", () => {
    });
 });
 
-describe("is.blank", () => {
+describe("is.nothing", () => {
    describe("true test cases", () => {
       it("should return true for an empty string", () => {
-         expect(is.blank("")).toBe(true);
+         expect(is.nothing("")).toBe(true);
       });
 
       it("should return true for a string with whitespace", () => {
-         expect(is.blank(" ")).toBe(true);
+         expect(is.nothing(" ")).toBe(true);
       });
 
       it("should return true for a string with a newline character", () => {
-         expect(is.blank("\n")).toBe(true);
+         expect(is.nothing("\n")).toBe(true);
       });
 
       it("should return true for a string with a tab character", () => {
-         expect(is.blank("\t")).toBe(true);
+         expect(is.nothing("\t")).toBe(true);
       });
 
       it("should return true for a string with a newline and tab character", () => {
-         expect(is.blank("\n\t")).toBe(true);
+         expect(is.nothing("\n\t")).toBe(true);
       });
 
       it("should return true for a string with a tab and newline character", () => {
-         expect(is.blank("\t\n")).toBe(true);
+         expect(is.nothing("\t\n")).toBe(true);
       });
 
       it("should return true for a string with a tab and newline character and whitespace", () => {
-         expect(is.blank("\t\n ")).toBe(true);
+         expect(is.nothing("\t\n ")).toBe(true);
       });
 
       it("should return true for a null", () => {
-         expect(is.blank(null)).toBe(true);
+         expect(is.nothing(null)).toBe(true);
       });
 
       it("should return true for an undefined", () => {
-         expect(is.blank(undefined)).toBe(true);
+         expect(is.nothing(undefined)).toBe(true);
       });
    });
 
    describe("false test cases", () => {
       it("should return false for a string with a value", () => {
-         expect(is.blank("a")).toBe(false);
+         expect(is.nothing("a")).toBe(false);
       });
 
       it("should return false for a string with whitespace at the beginning", () => {
-         expect(is.blank(" a")).toBe(false);
+         expect(is.nothing(" a")).toBe(false);
       });
 
       it("should return false for a string with whitespace at the end", () => {
-         expect(is.blank("a ")).toBe(false);
+         expect(is.nothing("a ")).toBe(false);
       });
 
       it("should return false for a string with whitespace in the middle", () => {
-         expect(is.blank("a b")).toBe(false);
+         expect(is.nothing("a b")).toBe(false);
       });
 
       it("should return false for a string with a tab and newline character and a value", () => {
-         expect(is.blank("\t\na")).toBe(false);
+         expect(is.nothing("\t\na")).toBe(false);
       });
 
       it("should return false for a string with a tab and newline character and whitespace at the beginning", () => {
-         expect(is.blank("\t\n a")).toBe(false);
+         expect(is.nothing("\t\n a")).toBe(false);
       });
 
       it("should return false for boolean true", () => {
-         expect(is.blank(true)).toBe(false);
+         expect(is.nothing(true)).toBe(false);
       });
 
       it("should return false for boolean false", () => {
-         expect(is.blank(false)).toBe(false);
+         expect(is.nothing(false)).toBe(false);
       });
 
       it("should return false for a number", () => {
-         expect(is.blank(1)).toBe(false);
+         expect(is.nothing(1)).toBe(false);
       });
 
       it("should return false for an empty object", () => {
-         expect(is.blank({})).toBe(false);
+         expect(is.nothing({})).toBe(false);
       });
 
       it("should return false for an object", () => {
-         expect(is.blank({ a: 1 })).toBe(false);
+         expect(is.nothing({ a: 1 })).toBe(false);
       });
 
       it("should return false for a function", () => {
-         expect(is.blank(() => {})).toBe(false);
+         expect(is.nothing(() => {})).toBe(false);
       });
 
       it("should return false for a Map", () => {
-         expect(is.blank(new Map())).toBe(false);
+         expect(is.nothing(new Map())).toBe(false);
       });
 
       it("should return false for a Set", () => {
-         expect(is.blank(new Set())).toBe(false);
+         expect(is.nothing(new Set())).toBe(false);
       });
 
       it("should return false for a Date", () => {
-         expect(is.blank(new Date())).toBe(false);
+         expect(is.nothing(new Date())).toBe(false);
       });
 
       it("should return false for a RegExp", () => {
-         expect(is.blank(/.*/)).toBe(false);
+         expect(is.nothing(/.*/)).toBe(false);
       });
 
       it("should return false for a Symbol", () => {
-         expect(is.blank(Symbol())).toBe(false);
+         expect(is.nothing(Symbol())).toBe(false);
       });
 
       it("should return false for an Error", () => {
-         expect(is.blank(new Error())).toBe(false);
+         expect(is.nothing(new Error())).toBe(false);
       });
 
       it("should return false for a Promise", () => {
-         expect(is.blank(Promise.resolve())).toBe(false);
+         expect(is.nothing(Promise.resolve())).toBe(false);
       });
 
       it("should return false for an empty array", () => {
-         expect(is.blank([])).toBe(false);
+         expect(is.nothing([])).toBe(false);
       });
 
       it("should return false for an array", () => {
-         expect(is.blank([1])).toBe(false);
+         expect(is.nothing([1])).toBe(false);
       });
 
       it("should return false for a Uint8Array", () => {
-         expect(is.blank(new Uint8Array())).toBe(false);
+         expect(is.nothing(new Uint8Array())).toBe(false);
       });
 
       it("should return false for a Uint16Array", () => {
-         expect(is.blank(new Uint16Array())).toBe(false);
+         expect(is.nothing(new Uint16Array())).toBe(false);
       });
 
       it("should return false for a Uint32Array", () => {
-         expect(is.blank(new Uint32Array())).toBe(false);
+         expect(is.nothing(new Uint32Array())).toBe(false);
       });
 
       it("should return false for a Int8Array", () => {
-         expect(is.blank(new Int8Array())).toBe(false);
+         expect(is.nothing(new Int8Array())).toBe(false);
       });
 
       it("should return false for a Int16Array", () => {
-         expect(is.blank(new Int16Array())).toBe(false);
+         expect(is.nothing(new Int16Array())).toBe(false);
       });
 
       it("should return false for a Int32Array", () => {
-         expect(is.blank(new Int32Array())).toBe(false);
+         expect(is.nothing(new Int32Array())).toBe(false);
       });
 
       it("should return false for a Float32Array", () => {
-         expect(is.blank(new Float32Array())).toBe(false);
+         expect(is.nothing(new Float32Array())).toBe(false);
       });
 
       it("should return false for a Float64Array", () => {
-         expect(is.blank(new Float64Array())).toBe(false);
+         expect(is.nothing(new Float64Array())).toBe(false);
       });
 
       it("should return false for a WeakMap", () => {
-         expect(is.blank(new WeakMap())).toBe(false);
+         expect(is.nothing(new WeakMap())).toBe(false);
       });
 
       it("should return false for a WeakSet", () => {
-         expect(is.blank(new WeakSet())).toBe(false);
+         expect(is.nothing(new WeakSet())).toBe(false);
       });
 
       it("should return false for a BigInt", () => {
-         expect(is.blank(BigInt(1))).toBe(false);
+         expect(is.nothing(BigInt(1))).toBe(false);
       });
 
       it("should return false for a Symbol", () => {
-         expect(is.blank(Symbol())).toBe(false);
+         expect(is.nothing(Symbol())).toBe(false);
       });
    });
 });
