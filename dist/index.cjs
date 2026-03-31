@@ -82,6 +82,23 @@ function buildIsObject() {
 }
 const isArray = buildIsArray();
 const isString = buildIsString();
+/**
+* A collection of "is"-style type-checking helpers.
+*
+* Each method accepts an `unknown` value and returns a boolean (or type guard).
+* Sub-namespaces like `is.string`, `is.number`, `is.array`, etc. provide
+* additional specialized checks.
+*
+* @example
+* ```ts
+* import is from "@deebeetech/is-helper";
+*
+* is.string("hello");         // true
+* is.number.positive(5);      // true
+* is.array.nonEmpty([1, 2]);  // true
+* is.boolean.value("yes");    // true
+* ```
+*/
 const is = {
 	null: (value) => value === null,
 	undefined: (value) => typeof value === "undefined" || value === void 0,
