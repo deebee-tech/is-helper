@@ -1,3 +1,9 @@
+## [2.0.2](https://github.com/deebee-tech/is-helper/compare/v2.0.1...v2.0.2) (2026-03-31)
+
+### Bug Fixes
+
+* **docs:** Fixing readme ([7ea8eab](https://github.com/deebee-tech/is-helper/commit/7ea8eabb90221526841e68a4e6b106ef387e73e8))
+
 ## [2.0.1](https://github.com/deebee-tech/is-helper/compare/v2.0.0...v2.0.1) (2026-03-30)
 
 ### Bug Fixes
