@@ -88,7 +88,7 @@ interface IsObject {
   /** Returns `true` if the value is a plain object whose prototype is `Object.prototype` or `null`. */
   plain<T = unknown>(value: unknown): value is Record<string | number | symbol, T>;
 }
-/** A predicate function that accepts an `unknown` value and returns a `boolean`. Used with {@linkcode Is.any} and {@linkcode Is.every}. */
+/** A predicate function that accepts an `unknown` value and returns a `boolean`. Used with {@linkcode Is.any} and {@linkcode Is.all}. */
 type CheckFn = (value: unknown) => boolean;
 /**
  * The main `is` interface that exposes all type-checking utilities.
@@ -113,7 +113,7 @@ interface Is {
   /** Returns `true` if the value is not `null` and not `undefined`. */
   defined(value: unknown): boolean;
   /** Returns `true` if the value is `null`, `undefined`, an empty string, or a whitespace-only string. */
-  blank(value: unknown): value is null | undefined | "";
+  nothing(value: unknown): value is null | undefined | "";
   /** Array type-checking utilities. See {@linkcode IsArray}. */
   array: IsArray;
   /** String type-checking utilities. See {@linkcode IsString}. */
@@ -132,8 +132,8 @@ interface Is {
   ipv4(value: unknown): boolean;
   /** Creates a check that returns `true` if **any** of the given checks pass for a value. */
   any(...checks: CheckFn[]): CheckFn;
-  /** Creates a check that returns `true` only if **every** given check passes for a value. */
-  every(...checks: CheckFn[]): CheckFn;
+  /** Creates a check that returns `true` only if **all** given checks pass for a value. */
+  all(...checks: CheckFn[]): CheckFn;
 }
 /**
  * A collection of "is"-style type-checking helpers.

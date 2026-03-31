@@ -108,7 +108,7 @@ const is = {
 	defined(value) {
 		return value !== null && value !== void 0;
 	},
-	blank(value) {
+	nothing(value) {
 		return this.nil(value) || isString.blank(value);
 	},
 	array: isArray,
@@ -125,7 +125,7 @@ const is = {
 	any(...checks) {
 		return (value) => checks.some((check) => check(value));
 	},
-	every(...checks) {
+	all(...checks) {
 		return (value) => checks.every((check) => check(value));
 	}
 };

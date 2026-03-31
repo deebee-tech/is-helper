@@ -1,3 +1,17 @@
+## [3.0.0](https://github.com/deebee-tech/is-helper/compare/v2.0.3...v3.0.0) (2026-03-31)
+
+### ⚠ BREAKING CHANGES
+
+* **repo:** Renamed combinator "every" to "all".  Renamed is.blank to is.nothing to denote blank string, empty string, null, and undefined.
+
+### Features
+
+* **repo:** Renaming of methods to make more sense ([585bdb9](https://github.com/deebee-tech/is-helper/commit/585bdb918482d3f05b90c30ccaee562e644542c7))
+
+### Bug Fixes
+
+* **repo:** Updating packages ([a4c9862](https://github.com/deebee-tech/is-helper/commit/a4c9862272c337d4bf069790303e36cf64ee72d1))
+
 ## [2.0.3](https://github.com/deebee-tech/is-helper/compare/v2.0.2...v2.0.3) (2026-03-31)
 
 ### Bug Fixes
