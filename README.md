@@ -1,4 +1,9 @@
-# is-helper
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/deebee-tech/is-helper/main/assets/is-helper-lockup-dark.svg">
+    <img alt="Is Helper" src="https://raw.githubusercontent.com/deebee-tech/is-helper/main/assets/is-helper-lockup-light.svg" width="307">
+  </picture>
+</p>
 
 <p>
   <a href="https://www.npmjs.com/package/@deebeetech/is-helper"><img alt="npm" src="https://img.shields.io/npm/v/@deebeetech/is-helper?color=cb3837&logo=npm"></a>
