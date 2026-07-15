@@ -169,6 +169,25 @@ is.object.plain(new (class Foo {})()); // false — a class instance is not plai
 is.object.of(is.number)({ a: 1, b: 2 }); // true
 ```
 
+`is.objectLike` is the broad counterpart — any non-null `typeof === 'object'` value, **arrays and
+built-ins included**. It is exactly the classic `value !== null && typeof value === 'object'` guard,
+and it narrows to `Record<string, unknown>` so the `as` cast that guard always needed goes away:
+
+```typescript
+is.objectLike({ a: 1 }); // true
+is.objectLike([1, 2, 3]); // true  — unlike is.object
+is.objectLike(new Date()); // true  — unlike is.object
+is.objectLike(null); // false
+is.objectLike(() => {}); // false — a function is not typeof 'object'
+
+const parsed: unknown = JSON.parse(input);
+if (is.objectLike(parsed)) {
+  for (const [k, v] of Object.entries(parsed)) {
+    /* parsed is Record<string, unknown>, no cast */
+  }
+}
+```
+
 ### Dates
 
 ```typescript

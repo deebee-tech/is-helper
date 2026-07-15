@@ -252,6 +252,8 @@ interface Is {
   boolean: IsBoolean;
   /** Object type-checking utilities. See {@linkcode IsObject}. */
   object: IsObject;
+  /** Returns `true` for any non-null value whose `typeof` is `'object'` — **including arrays** and built-ins like `Date`, `Map`, and `RegExp` — narrowing to `Record<string, unknown>` so a string key reads as `unknown`. This is the broad counterpart to {@linkcode Is.object} (which is `[object Object]`-only): it matches exactly `value !== null && typeof value === 'object'`, i.e. the classic hand-rolled guard, and centralizes the `as Record<string, unknown>` cast that guard always needed. Functions return `false` (`typeof` is `'function'`). */
+  objectLike(value: unknown): value is Record<string, unknown>;
   /** Date type-checking utilities. See {@linkcode IsDate}. */
   date: IsDate;
   /** Error type-checking utilities. See {@linkcode IsError}. */

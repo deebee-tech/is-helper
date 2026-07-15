@@ -295,6 +295,7 @@ const is = {
 	numeric: isNumeric,
 	boolean: isBoolean,
 	object: isObject,
+	objectLike: (value) => value !== null && typeof value === "object",
 	date: isDate,
 	error: isError,
 	map: isMap,

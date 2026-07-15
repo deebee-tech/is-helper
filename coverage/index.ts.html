@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">99.22% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>255/257</span>
+                <span class='fraction'>256/258</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">98.61% </span>
+                <span class="strong">98.63% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>142/144</span>
+                <span class='fraction'>144/146</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>88/88</span>
+                <span class='fraction'>89/89</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>201/201</span>
+                <span class='fraction'>202/202</span>
             </div>
         
             
@@ -959,7 +959,17 @@
 <a name='L894'></a><a href='#L894'>894</a>
 <a name='L895'></a><a href='#L895'>895</a>
 <a name='L896'></a><a href='#L896'>896</a>
-<a name='L897'></a><a href='#L897'>897</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L897'></a><a href='#L897'>897</a>
+<a name='L898'></a><a href='#L898'>898</a>
+<a name='L899'></a><a href='#L899'>899</a>
+<a name='L900'></a><a href='#L900'>900</a>
+<a name='L901'></a><a href='#L901'>901</a>
+<a name='L902'></a><a href='#L902'>902</a>
+<a name='L903'></a><a href='#L903'>903</a>
+<a name='L904'></a><a href='#L904'>904</a>
+<a name='L905'></a><a href='#L905'>905</a>
+<a name='L906'></a><a href='#L906'>906</a>
+<a name='L907'></a><a href='#L907'>907</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -988,8 +998,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">149x</span>
-<span class="cline-any cline-yes">149x</span>
+<span class="cline-any cline-yes">157x</span>
+<span class="cline-any cline-yes">157x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1058,6 +1068,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">244x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1511,7 +1523,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">139x</span>
+<span class="cline-any cline-yes">151x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">45x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1748,6 +1760,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">37x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2235,6 +2255,8 @@ export interface Is {
   boolean: IsBoolean;
   /** Object type-checking utilities. See {@linkcode IsObject}. */
   object: IsObject;
+  /** Returns `true` for any non-null value whose `typeof` is `'object'` — **including arrays** and built-ins like `Date`, `Map`, and `RegExp` — narrowing to `Record&lt;string, unknown&gt;` so a string key reads as `unknown`. This is the broad counterpart to {@linkcode Is.object} (which is `[object Object]`-only): it matches exactly `value !== null &amp;&amp; typeof value === 'object'`, i.e. the classic hand-rolled guard, and centralizes the `as Record&lt;string, unknown&gt;` cast that guard always needed. Functions return `false` (`typeof` is `'function'`). */
+  objectLike(value: unknown): value is Record&lt;string, unknown&gt;;
   /** Date type-checking utilities. See {@linkcode IsDate}. */
   date: IsDate;
   /** Error type-checking utilities. See {@linkcode IsError}. */
@@ -2645,6 +2667,14 @@ const is: Is = {
   numeric: isNumeric,
   boolean: isBoolean,
   object: isObject,
+&nbsp;
+  // The array-accepting counterpart to is.object. Narrows to Record&lt;string, unknown&gt; — the exact
+  // cast the `x &amp;&amp; typeof x === 'object'` guard always had to write by hand — and reading any string
+  // key yields `unknown`, so the narrowing is loose but never unsound. Functions are excluded
+  // (typeof 'function'); null is excluded (the whole reason the hand-rolled guard needs `x &amp;&amp;`).
+  objectLike: (value: unknown): value is Record&lt;string, unknown&gt; =&gt;
+    value !== null &amp;&amp; typeof value === 'object',
+&nbsp;
   date: isDate,
   error: isError,
   map: isMap,
@@ -2758,7 +2788,7 @@ export default is;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-14T19:49:32.316Z
+                at 2026-07-15T11:23:16.345Z
             </div>
         <script src="prettify.js"></script>
         <script>

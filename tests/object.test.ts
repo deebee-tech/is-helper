@@ -276,3 +276,126 @@ describe('is.object.plain', () => {
     });
   });
 });
+
+describe('is.objectLike', () => {
+  // The contract: byte-for-byte the classic `value !== null && typeof value === 'object'` guard.
+  describe('true test cases', () => {
+    it('should return true for a plain object', () => {
+      expect(is.objectLike({ a: 1 })).toBe(true);
+    });
+
+    it('should return true for an empty object', () => {
+      expect(is.objectLike({})).toBe(true);
+    });
+
+    it('should return true for a null-prototype object', () => {
+      expect(is.objectLike(Object.create(null))).toBe(true);
+    });
+
+    it('should return true for a class instance', () => {
+      expect(is.objectLike(new (class Foo {})())).toBe(true);
+    });
+
+    // The whole reason objectLike exists: is.object rejects these, the old hand-rolled guard did not.
+    it('should return true for an array', () => {
+      expect(is.objectLike([1, 2, 3])).toBe(true);
+    });
+
+    it('should return true for an empty array', () => {
+      expect(is.objectLike([])).toBe(true);
+    });
+
+    it('should return true for a Date', () => {
+      expect(is.objectLike(new Date())).toBe(true);
+    });
+
+    it('should return true for a Map', () => {
+      expect(is.objectLike(new Map())).toBe(true);
+    });
+
+    it('should return true for a Set', () => {
+      expect(is.objectLike(new Set())).toBe(true);
+    });
+
+    it('should return true for a RegExp', () => {
+      expect(is.objectLike(/x/)).toBe(true);
+    });
+
+    it('should return true for an Error', () => {
+      expect(is.objectLike(new Error('boom'))).toBe(true);
+    });
+
+    it('should return true for a typed array', () => {
+      expect(is.objectLike(new Uint8Array(2))).toBe(true);
+    });
+
+    it('should return true for a boxed primitive', () => {
+      expect(is.objectLike(new String('x'))).toBe(true);
+    });
+  });
+
+  describe('false test cases', () => {
+    it('should return false for null', () => {
+      expect(is.objectLike(null)).toBe(false);
+    });
+
+    it('should return false for undefined', () => {
+      expect(is.objectLike(undefined)).toBe(false);
+    });
+
+    // typeof a function is 'function', not 'object'.
+    it('should return false for a function', () => {
+      expect(is.objectLike(() => {})).toBe(false);
+    });
+
+    it('should return false for a string', () => {
+      expect(is.objectLike('str')).toBe(false);
+    });
+
+    it('should return false for a number', () => {
+      expect(is.objectLike(42)).toBe(false);
+    });
+
+    it('should return false for zero', () => {
+      expect(is.objectLike(0)).toBe(false);
+    });
+
+    it('should return false for a boolean', () => {
+      expect(is.objectLike(true)).toBe(false);
+    });
+
+    it('should return false for a symbol', () => {
+      expect(is.objectLike(Symbol('x'))).toBe(false);
+    });
+
+    it('should return false for a bigint', () => {
+      expect(is.objectLike(10n)).toBe(false);
+    });
+  });
+
+  // objectLike matches the classic guard exactly; is.object is the strict [object Object] subset.
+  describe('relationship to is.object', () => {
+    it('should be a strict superset of is.object', () => {
+      const values: unknown[] = [
+        {},
+        { a: 1 },
+        [1],
+        new Date(),
+        new Map(),
+        /x/,
+        null,
+        42,
+        'a',
+        () => {},
+      ];
+      const impliesObjectLike = values.every((v) => !is.object(v) || is.objectLike(v));
+
+      expect(impliesObjectLike).toBe(true);
+    });
+
+    it('should differ from is.object exactly on non-plain objects', () => {
+      expect([is.object([1]), is.objectLike([1])]).toEqual([false, true]);
+      expect([is.object(new Date()), is.objectLike(new Date())]).toEqual([false, true]);
+    });
+  });
+});

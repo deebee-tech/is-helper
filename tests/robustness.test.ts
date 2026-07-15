@@ -204,6 +204,7 @@ describe('no check ever throws', () => {
     ['is.object.empty', is.object.empty],
     ['is.object.plain', is.object.plain],
     ['is.object.of', is.object.of(is.number)],
+    ['is.objectLike', is.objectLike],
     ['is.date', is.date],
     ['is.date.valid', is.date.valid],
     ['is.date.invalid', is.date.invalid],

@@ -378,6 +378,8 @@ export interface Is {
   boolean: IsBoolean;
   /** Object type-checking utilities. See {@linkcode IsObject}. */
   object: IsObject;
+  /** Returns `true` for any non-null value whose `typeof` is `'object'` — **including arrays** and built-ins like `Date`, `Map`, and `RegExp` — narrowing to `Record<string, unknown>` so a string key reads as `unknown`. This is the broad counterpart to {@linkcode Is.object} (which is `[object Object]`-only): it matches exactly `value !== null && typeof value === 'object'`, i.e. the classic hand-rolled guard, and centralizes the `as Record<string, unknown>` cast that guard always needed. Functions return `false` (`typeof` is `'function'`). */
+  objectLike(value: unknown): value is Record<string, unknown>;
   /** Date type-checking utilities. See {@linkcode IsDate}. */
   date: IsDate;
   /** Error type-checking utilities. See {@linkcode IsError}. */
@@ -788,6 +790,14 @@ const is: Is = {
   numeric: isNumeric,
   boolean: isBoolean,
   object: isObject,
+
+  // The array-accepting counterpart to is.object. Narrows to Record<string, unknown> — the exact
+  // cast the `x && typeof x === 'object'` guard always had to write by hand — and reading any string
+  // key yields `unknown`, so the narrowing is loose but never unsound. Functions are excluded
+  // (typeof 'function'); null is excluded (the whole reason the hand-rolled guard needs `x &&`).
+  objectLike: (value: unknown): value is Record<string, unknown> =>
+    value !== null && typeof value === 'object',
+
   date: isDate,
   error: isError,
   map: isMap,
