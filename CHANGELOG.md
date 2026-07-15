@@ -1,3 +1,5 @@
+## [4.1.0](https://github.com/deebee-tech/is-helper/compare/v4.0.0...v4.1.0) (2026-07-15)
+
 ## [4.0.0](https://github.com/deebee-tech/is-helper/compare/v3.0.0...v4.0.0) (2026-07-14)
 
 ## [3.0.0](https://github.com/deebee-tech/is-helper/compare/v2.0.3...v3.0.0) (2026-03-31)
