@@ -1,3 +1,10 @@
+## [4.1.2](https://github.com/deebee-tech/is-helper/compare/v4.1.1...v4.1.2) (2026-07-16)
+
+
+### Bug Fixes
+
+* resolve CJS types per lane so node16 consumers stop hitting TS1479 ([377d95f](https://github.com/deebee-tech/is-helper/commit/377d95f175bb3066da26dd2d30cc5a4bc2793cbb))
+
 ## [4.1.1](https://github.com/deebee-tech/is-helper/compare/v4.1.0...v4.1.1) (2026-07-15)
 
 ## [4.1.0](https://github.com/deebee-tech/is-helper/compare/v4.0.0...v4.1.0) (2026-07-15)
