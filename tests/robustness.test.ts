@@ -98,6 +98,12 @@ describe('cross-realm values are recognized', () => {
     expect(is.array(realm.array)).toBe(true);
   });
 
+  it('should recognize a cross-realm plain object via is.object.plain', () => {
+    const remote = vm.runInNewContext('({ a: 1 })') as object;
+
+    expect(is.object.plain(remote)).toBe(true);
+  });
+
   it('should recognize a cross-realm typed array', () => {
     expect(is.typedArray(realm.typedArray)).toBe(true);
   });
@@ -222,8 +228,17 @@ describe('no check ever throws', () => {
     ['is.iterable', is.iterable],
     ['is.asyncIterable', is.asyncIterable],
     ['is.ipv4', is.ipv4],
+    ['is.ipv6', is.ipv6],
+    ['is.ip', is.ip],
     ['is.uuid', is.uuid],
     ['is.email', is.email],
+    ['is.arrayBuffer', is.arrayBuffer],
+    ['is.dataView', is.dataView],
+    ['is.weakMap', is.weakMap],
+    ['is.weakSet', is.weakSet],
+    ['is.object.nonEmpty', is.object.nonEmpty],
+    ['is.string.nonEmpty', is.string.nonEmpty],
+    ['is.boolean.parse', is.boolean.parse],
   ];
 
   for (const [checkName, check] of checks) {

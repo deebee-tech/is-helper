@@ -14,6 +14,8 @@ const pkg = JSON.parse(
 ) as {
   main: string;
   types: string;
+  files?: string[];
+  sideEffects?: boolean;
   exports: Record<
     string,
     { import: { types: string; default: string }; require: { types: string; default: string } }
@@ -23,6 +25,9 @@ const pkg = JSON.parse(
 describe('package exports map', () => {
   it('resolves types per lane, so a CJS consumer never lands on the ESM .d.mts', () => {
     const root = pkg.exports['.'];
+
+    expect(root).toBeDefined();
+    if (!root) return;
 
     // The whole bug: `types` must live INSIDE each lane, never above them.
     expect(root).not.toHaveProperty('types');
@@ -35,6 +40,11 @@ describe('package exports map', () => {
 
   it('points `main` at the CJS build, since `main` is only ever read by CJS consumers', () => {
     expect(pkg.main).toMatch(/\.cjs$/);
+  });
+
+  it('limits a root publish to dist, and marks the module side-effect free', () => {
+    expect(pkg.files).toEqual(['dist']);
+    expect(pkg.sideEffects).toBe(false);
   });
 });
 

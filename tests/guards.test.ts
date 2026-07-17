@@ -118,6 +118,10 @@ describe('is.instanceOf', () => {
   it('should throw a TypeError when handed a non-constructor', () => {
     expect(() => is.instanceOf('not a constructor' as never)).toThrow(TypeError);
   });
+
+  it('should throw a TypeError when handed an arrow function', () => {
+    expect(() => is.instanceOf((() => {}) as never)).toThrow(TypeError);
+  });
 });
 
 describe('is.oneOf', () => {
