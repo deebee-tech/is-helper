@@ -7,7 +7,8 @@
  *
  * @example
  * ```ts
- * import is from '@deebeetech/is-helper';
+ * import is, { type Guard, type TypedArray } from '@deebeetech/is-helper';
+ * // or: import { is } from '@deebeetech/is-helper';
  *
  * is.string('hello'); // true
  * is.number(42);      // true
@@ -61,17 +62,44 @@ const dateGetTime = Date.prototype.getTime as (this: unknown) => number;
 const regExpSource = Object.getOwnPropertyDescriptor(RegExp.prototype, 'source')?.get;
 const mapSize = Object.getOwnPropertyDescriptor(Map.prototype, 'size')?.get;
 const setSize = Object.getOwnPropertyDescriptor(Set.prototype, 'size')?.get;
+const typedArrayPrototype = Object.getPrototypeOf(Int8Array.prototype) as object;
 const typedArrayTag = Object.getOwnPropertyDescriptor(
   // %TypedArray%.prototype — the shared prototype behind Int8Array, Float64Array, and the rest.
-  Object.getPrototypeOf(Int8Array.prototype) as object,
+  typedArrayPrototype,
   Symbol.toStringTag,
 )?.get as ((this: unknown) => string | undefined) | undefined;
+const typedArrayLength = Object.getOwnPropertyDescriptor(typedArrayPrototype, 'length')?.get as
+  ((this: unknown) => number) | undefined;
+const arrayBufferByteLength = Object.getOwnPropertyDescriptor(
+  ArrayBuffer.prototype,
+  'byteLength',
+)?.get;
+const dataViewByteLength = Object.getOwnPropertyDescriptor(DataView.prototype, 'byteLength')?.get;
+const weakMapHas = WeakMap.prototype.has as (this: unknown, key: object) => boolean;
+const weakSetHas = WeakSet.prototype.has as (this: unknown, key: object) => boolean;
+
+/** Native `Object` source, captured once — used by {@linkcode IsObject.plain} for a realm-independent prototype check. */
+const nativeObjectSource = Function.prototype.toString.call(Object);
 
 const hasBrand = (getter: ((this: unknown) => unknown) | undefined, value: unknown): boolean => {
   if (typeof getter !== 'function') return false;
 
   try {
     getter.call(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const hasMethodBrand = (
+  method: ((this: unknown, key: object) => unknown) | undefined,
+  value: unknown,
+): boolean => {
+  if (typeof method !== 'function') return false;
+
+  try {
+    method.call(value, {});
     return true;
   } catch {
     return false;
@@ -85,7 +113,9 @@ const brandedSize = (
   if (typeof getter !== 'function') return undefined;
 
   try {
-    return getter.call(value) as number;
+    const size = getter.call(value);
+
+    return typeof size === 'number' ? size : undefined;
   } catch {
     return undefined;
   }
@@ -123,8 +153,15 @@ export type GuardedAll<G extends readonly CheckFn[]> = G extends readonly [
 /** Any JavaScript primitive value. */
 export type Primitive = string | number | bigint | boolean | symbol | null | undefined;
 
-/** The sound top type for functions: safe to test for, callable, and returning `unknown` rather than `any`. */
-export type AnyFn = (...args: any[]) => unknown;
+/**
+ * The sound top type for functions: safe to test for, callable *or* constructable, and returning
+ * `unknown` rather than `any`. The construct signature keeps class constructors assignable under
+ * {@linkcode Is.fn} narrowing.
+ */
+export type AnyFn = {
+  (...args: any[]): unknown;
+  new (...args: any[]): unknown;
+};
 
 /** Any typed array. Excludes `DataView`, which is a binary view but not an indexed numeric array. */
 export type TypedArray =
@@ -135,6 +172,7 @@ export type TypedArray =
   | Uint16Array
   | Int32Array
   | Uint32Array
+  | Float16Array
   | Float32Array
   | Float64Array
   | BigInt64Array
@@ -161,7 +199,12 @@ export interface IsArray {
   nonEmpty<T>(value: readonly T[] | null | undefined): value is readonly [T, ...T[]];
   /** Returns `true` if the value is a non-empty array. */
   nonEmpty<T = unknown>(value: unknown): value is [T, ...T[]];
-  /** Creates a check that passes when the value is an array whose every item passes `itemCheck`. An empty array passes vacuously — compose with {@linkcode IsArray.nonEmpty} via {@linkcode Is.all} if that is not what you want. */
+  /**
+   * Creates a check that passes when the value is an array whose every item passes `itemCheck`. An
+   * empty array passes vacuously — compose with {@linkcode IsArray.nonEmpty} via {@linkcode Is.all}
+   * if that is not what you want. Hostile proxies, throwing index/length getters, and a throwing
+   * `itemCheck` all return `false` rather than throwing — same policy as {@linkcode IsObject.of}.
+   */
   of<T>(itemCheck: Guard<T>): Guard<T[]>;
   /** Creates a check that passes when the value is an array whose every item passes `itemCheck`. */
   of(itemCheck: CheckFn): Guard<unknown[]>;
@@ -178,6 +221,8 @@ export interface IsString {
   (value: unknown): value is string;
   /** Returns `true` if the value is an empty string (`''`). */
   empty(value: unknown): boolean;
+  /** Returns `true` if the value is a non-empty string, narrowing away `''`. */
+  nonEmpty(value: unknown): value is string;
   /** Returns `true` if the value is a non-empty string that contains only whitespace. */
   whitespace(value: unknown): boolean;
   /** Returns `true` if the value is an empty string or a whitespace-only string. */
@@ -204,10 +249,18 @@ export interface IsNumber {
   negative(value: unknown): value is number;
   /** Returns `true` if the value is a finite number greater than or equal to `0`. */
   nonNegative(value: unknown): value is number;
+  /** Returns `true` if the value is a finite number less than or equal to `0`. Note `-0` satisfies this (`-0 === 0`). */
+  nonPositive(value: unknown): value is number;
   /** Returns `true` if the value is an integer. */
   integer(value: unknown): value is number;
   /** Returns `true` if the value is an integer greater than `0`. */
   positiveInteger(value: unknown): value is number;
+  /** Returns `true` if the value is an integer less than `0`. */
+  negativeInteger(value: unknown): value is number;
+  /** Returns `true` if the value is an integer greater than or equal to `0`. */
+  nonNegativeInteger(value: unknown): value is number;
+  /** Returns `true` if the value is an integer less than or equal to `0`. */
+  nonPositiveInteger(value: unknown): value is number;
   /** Returns `true` if the value is an integer exactly representable as a JS number — i.e. within `Number.MAX_SAFE_INTEGER`. Use this wherever JS numbers meet 64-bit database integer columns. */
   safeInteger(value: unknown): value is number;
 }
@@ -247,23 +300,41 @@ export interface IsBoolean {
   like(value: unknown): boolean;
   /** Extracts the boolean meaning from a boolean-like value. Returns `false` if the value is not boolean-like. */
   value(value: unknown): boolean;
+  /**
+   * Parses a boolean-like value to a `boolean`, or returns `undefined` if it is not boolean-like.
+   * Unlike {@linkcode IsBoolean.value}, this does not collapse the unrecognized case to `false`.
+   */
+  parse(value: unknown): boolean | undefined;
 }
 
 /**
  * Object type-checking utilities.
  *
  * Callable as a function to check if a value is a plain `[object Object]` — arrays, `null`,
- * functions, and every built-in carrying its own `Symbol.toStringTag` (`Map`, `Set`, `Date`,
- * `RegExp`, `Error`, `Promise`, typed arrays) are excluded.
+ * functions, and built-ins whose tag is not `[object Object]` (`Map`, `Set`, `Date`, `RegExp`,
+ * `Promise`, typed arrays, …) are excluded. `Error` is also excluded by tag in ordinary realms;
+ * note that `Date`/`RegExp`/`Error` do **not** define their own `Symbol.toStringTag` — the tag
+ * comes from the default `Object.prototype.toString` brand.
  */
 export interface IsObject {
-  /** Returns `true` if the value's object tag is `[object Object]`. Class instances and null-prototype objects are accepted; use {@linkcode IsObject.plain} to exclude class instances. */
+  /** Returns `true` if the value's object tag is `[object Object]`. Class instances and null-prototype objects are accepted; use {@linkcode IsObject.plain} for dictionary-shaped objects only. */
   (value: unknown): value is Record<string, unknown>;
   /** Returns `true` if the value is an object with no own enumerable properties. */
   empty(value: unknown): boolean;
-  /** Returns `true` if the value is an object whose prototype is `Object.prototype` or `null` — i.e. not a class instance. */
+  /** Returns `true` if the value is an `[object Object]` with at least one own enumerable property. */
+  nonEmpty(value: unknown): value is Record<string, unknown>;
+  /**
+   * Returns `true` if the value is a dictionary-shaped object: either a null-prototype object, or an
+   * object whose immediate prototype is a realm's `Object.prototype` (verified via the native
+   * `Object` source string, so cross-realm plain objects pass). Class instances fail.
+   */
   plain<T = unknown>(value: unknown): value is Record<string | number | symbol, T>;
-  /** Creates a check that passes when every own enumerable string-keyed value passes `valueCheck`. An empty object passes vacuously. Inherited, symbol-keyed, and non-enumerable properties are not inspected. */
+  /**
+   * Creates a check that passes when every own enumerable string-keyed value passes `valueCheck`.
+   * An empty object passes vacuously. Inherited, symbol-keyed, and non-enumerable properties are not
+   * inspected. Hostile proxies, throwing getters, and a throwing `valueCheck` all return `false`
+   * rather than throwing — same policy as {@linkcode IsArray.of}.
+   */
   of<T>(valueCheck: Guard<T>): Guard<Record<string, T>>;
   /** Creates a check that passes when every own enumerable string-keyed value passes `valueCheck`. */
   of(valueCheck: CheckFn): Guard<Record<string, unknown>>;
@@ -306,7 +377,7 @@ export interface IsMap {
   /** Returns `true` if the value is a `Map`, including subclasses and cross-realm Maps. Brand-checks the internal slot, so tag spoofs and `Object.create(Map.prototype)` return `false`. */
   <K = unknown, V = unknown>(value: unknown): value is Map<K, V>;
   /** Returns `true` if the value is an empty `Map` (size 0). */
-  empty(value: unknown): boolean;
+  empty(value: unknown): value is Map<unknown, unknown>;
   /** Returns `true` if the value is a non-empty `Map` (size > 0). */
   nonEmpty(value: unknown): value is Map<unknown, unknown>;
 }
@@ -320,7 +391,7 @@ export interface IsSet {
   /** Returns `true` if the value is a `Set`, including subclasses and cross-realm Sets. Brand-checks the internal slot, so tag spoofs and `Object.create(Set.prototype)` return `false`. */
   <T = unknown>(value: unknown): value is Set<T>;
   /** Returns `true` if the value is an empty `Set` (size 0). */
-  empty(value: unknown): boolean;
+  empty(value: unknown): value is Set<unknown>;
   /** Returns `true` if the value is a non-empty `Set` (size > 0). */
   nonEmpty(value: unknown): value is Set<unknown>;
 }
@@ -368,6 +439,14 @@ export interface Is {
   array: IsArray;
   /** Returns `true` if the value is a typed array (`Uint8Array`, `Float64Array`, …). Brand-checks the internal slot, so it is cross-realm safe and unspoofable. `DataView` is `false`; Node's `Buffer` is `true` (it is a `Uint8Array`). */
   typedArray(value: unknown): value is TypedArray;
+  /** Returns `true` if the value is an `ArrayBuffer`. Brand-checks the internal slot. */
+  arrayBuffer(value: unknown): value is ArrayBuffer;
+  /** Returns `true` if the value is a `DataView`. Brand-checks the internal slot. */
+  dataView(value: unknown): value is DataView;
+  /** Returns `true` if the value is a `WeakMap`. Brand-checks the internal slot. */
+  weakMap(value: unknown): value is WeakMap<object, unknown>;
+  /** Returns `true` if the value is a `WeakSet`. Brand-checks the internal slot. */
+  weakSet(value: unknown): value is WeakSet<object>;
   /** String type-checking utilities. See {@linkcode IsString}. */
   string: IsString;
   /** Number type-checking utilities. See {@linkcode IsNumber}. */
@@ -404,13 +483,17 @@ export interface Is {
   iterable(value: unknown): value is Iterable<unknown>;
   /** Returns `true` if the value implements the async iterable protocol. Async generators are not sync-iterable, so they return `false` from {@linkcode Is.iterable}. */
   asyncIterable(value: unknown): value is AsyncIterable<unknown>;
-  /** Returns `true` if the value is a valid IPv4 address string. */
+  /** Returns `true` if the value is a valid IPv4 address string. Rejects leading zeros (`'01.1.1.1'`) — inet_aton-style octal parsing makes those a common allowlist bypass. */
   ipv4(value: unknown): boolean;
+  /** Returns `true` if the value is a valid IPv6 address string, including compressed and IPv4-mapped forms. Zone IDs (`fe80::1%eth0`) are rejected. */
+  ipv6(value: unknown): boolean;
+  /** Returns `true` if the value is a valid IPv4 or IPv6 address string. */
+  ip(value: unknown): boolean;
   /** Returns `true` if the value is an RFC 9562 UUID string, version 1–8, in canonical hyphenated form. Case-insensitive. Deliberately rejects the nil UUID, the max UUID, the braced and `urn:uuid:` forms, and unhyphenated hex. */
   uuid(value: unknown): boolean;
   /** Returns `true` if the value is a plausible email-address string. Deliberately permissive shape validation, not RFC 5322 conformance. */
   email(value: unknown): boolean;
-  /** Creates a check that passes when the value is an instance of `ctor`. **Realm-blind** — a `Date` from a worker fails this but passes {@linkcode Is.date}, so prefer the named built-in checks for built-in types. Throws `TypeError` if `ctor` is not a constructor. */
+  /** Creates a check that passes when the value is an instance of `ctor`. **Realm-blind** — a `Date` from a worker fails this but passes {@linkcode Is.date}, so prefer the named built-in checks for built-in types. Throws `TypeError` if `ctor` is not a constructor (including arrow functions and bound functions, which `instanceof` rejects). */
   instanceOf<T>(ctor: abstract new (...args: never[]) => T): Guard<T>;
   /** Creates a check that passes when the value is one of `values`. Comparison is SameValueZero: `NaN` matches `NaN`, and `-0` matches `0`. */
   oneOf<const T extends readonly (string | number | bigint | boolean | null | undefined)[]>(
@@ -418,10 +501,21 @@ export interface Is {
   ): Guard<T[number]>;
   /** Creates a check that passes if **any** of the given checks pass. When every check is a type guard the result narrows to their union; a plain {@linkcode CheckFn} contributes `unknown`, correctly collapsing it. */
   any<const G extends readonly CheckFn[]>(...checks: G): Guard<Guarded<G[number]>>;
-  /** Creates a check that passes only if **all** the given checks pass. When the checks are type guards the result narrows to their intersection; plain {@linkcode CheckFn} arguments contribute `unknown` and do not weaken the others. */
+  /**
+   * Creates a check that passes only if **all** the given checks pass. When the checks are type
+   * guards the result narrows to their intersection; plain {@linkcode CheckFn} arguments contribute
+   * `unknown` and do not weaken the others. With zero checks this is vacuously `true` for every
+   * value — compose deliberately.
+   */
   all<const G extends readonly CheckFn[]>(...checks: G): Guard<GuardedAll<G>>;
   /** Creates a check that passes when the given check does **not**. Note this **widens**: `is.not(is.string.blank)` is `true` for `42`, `{}`, and `null` — every value the wrapped check rejects. Compose with {@linkcode Is.all} to keep the type constrained: `is.all(is.string, is.not(is.string.blank))`. */
   not(check: CheckFn): CheckFn;
+  /**
+   * Throws `TypeError` if `check(value)` is false; otherwise returns `value` narrowed by `check`.
+   * This is the library's one intentional throw — every other method keeps the never-throws contract.
+   */
+  assert<T>(value: unknown, check: Guard<T>, message?: string): T;
+  assert(value: unknown, check: CheckFn, message?: string): unknown;
 }
 
 // ---------------------------------------------------------------------------
@@ -431,18 +525,38 @@ export interface Is {
 function buildIsArray(): IsArray {
   const check = <T = unknown>(value: unknown): value is T[] => isArraySafe(value);
 
-  check.empty = (value: unknown): boolean => check(value) && value.length === 0;
+  check.empty = (value: unknown): boolean => {
+    if (!check(value)) return false;
 
-  check.nonEmpty = ((value: unknown): boolean =>
-    check(value) && value.length > 0) as IsArray['nonEmpty'];
+    try {
+      return value.length === 0;
+    } catch {
+      return false;
+    }
+  };
+
+  check.nonEmpty = ((value: unknown): boolean => {
+    if (!check(value)) return false;
+
+    try {
+      return value.length > 0;
+    } catch {
+      return false;
+    }
+  }) as IsArray['nonEmpty'];
 
   check.of = ((itemCheck: CheckFn) => (value: unknown) => {
     if (!check(value)) return false;
 
-    // An index loop, not `.every()`: every() skips holes, so `[1, , 3].every(is.number)` is true
-    // and would narrow a sparse array containing `undefined` to `number[]`.
-    for (let i = 0; i < value.length; i++) {
-      if (!itemCheck(value[i])) return false;
+    try {
+      // An index loop, not `.every()`: every() skips holes, so `[1, , 3].every(is.number)` is true
+      // and would narrow a sparse array containing `undefined` to `number[]`. Length/index access and
+      // itemCheck may throw on a hostile proxy or getter — an `is.*` check must not.
+      for (let i = 0; i < value.length; i++) {
+        if (!itemCheck(value[i])) return false;
+      }
+    } catch {
+      return false;
     }
 
     return true;
@@ -455,6 +569,8 @@ function buildIsString(): IsString {
   const check = (value: unknown): value is string => typeof value === 'string';
 
   check.empty = (value: unknown): boolean => check(value) && value.length === 0;
+
+  check.nonEmpty = (value: unknown): value is string => check(value) && value.length > 0;
 
   check.whitespace = (value: unknown): boolean =>
     check(value) && value.length > 0 && !/\S/.test(value);
@@ -480,9 +596,19 @@ function buildIsNumber(): IsNumber {
 
   check.nonNegative = (value: unknown): value is number => check.finite(value) && value >= 0;
 
+  check.nonPositive = (value: unknown): value is number => check.finite(value) && value <= 0;
+
   check.integer = (value: unknown): value is number => Number.isInteger(value);
 
   check.positiveInteger = (value: unknown): value is number => check.integer(value) && value > 0;
+
+  check.negativeInteger = (value: unknown): value is number => check.integer(value) && value < 0;
+
+  check.nonNegativeInteger = (value: unknown): value is number =>
+    check.integer(value) && value >= 0;
+
+  check.nonPositiveInteger = (value: unknown): value is number =>
+    check.integer(value) && value <= 0;
 
   check.safeInteger = (value: unknown): value is number => Number.isSafeInteger(value);
 
@@ -492,8 +618,11 @@ function buildIsNumber(): IsNumber {
 /**
  * Shape validation only. `Number.isFinite` still does the magnitude check afterwards: `'1e999'`
  * matches this pattern but overflows to `Infinity`.
+ *
+ * The digit run is owned once (`\d+(?:\.\d*)?`) rather than `\d+\.?\d*`, which is quadratic under
+ * rejection — the same class of bug the EMAIL pattern below was rewritten to avoid.
  */
-const NUMERIC_STRING = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
+const NUMERIC_STRING = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 
 function buildIsNumeric(): IsNumeric {
   const check = (value: unknown): boolean => {
@@ -547,6 +676,9 @@ function buildIsBoolean(): IsBoolean {
     return value === 1;
   };
 
+  check.parse = (value: unknown): boolean | undefined =>
+    check.like(value) ? check.value(value) : undefined;
+
   return check;
 }
 
@@ -556,13 +688,31 @@ function buildIsObject(): IsObject {
 
   check.empty = (value: unknown): boolean => check(value) && ownKeyCount(value) === 0;
 
+  check.nonEmpty = (value: unknown): value is Record<string, unknown> => {
+    const count = check(value) ? ownKeyCount(value) : undefined;
+
+    return count !== undefined && count > 0;
+  };
+
   check.plain = <T = unknown>(value: unknown): value is Record<string | number | symbol, T> => {
     if (!check(value)) return false;
 
     try {
-      const prototype = Object.getPrototypeOf(value) as unknown;
+      const prototype = Object.getPrototypeOf(value) as object | null;
 
-      return prototype === null || prototype === Object.prototype;
+      // Null-prototype dictionary.
+      if (prototype === null) return true;
+
+      // Class instances (and anything deeper than Object.prototype) have a non-null grand-proto.
+      if (Object.getPrototypeOf(prototype) !== null) return false;
+
+      // Realm-independent: the immediate proto is some realm's Object.prototype iff its constructor
+      // still stringifies as the native Object function.
+      const ctor = (prototype as { constructor?: unknown }).constructor;
+
+      return (
+        typeof ctor === 'function' && Function.prototype.toString.call(ctor) === nativeObjectSource
+      );
     } catch {
       return false;
     }
@@ -573,7 +723,8 @@ function buildIsObject(): IsObject {
 
     try {
       // Object.keys and the property reads below invoke getters and Proxy traps, either of which
-      // may throw. An `is.*` check must not.
+      // may throw. An `is.*` check must not — including a throwing valueCheck (same policy as
+      // is.array.of).
       for (const key of Object.keys(value)) {
         if (!valueCheck(value[key])) return false;
       }
@@ -655,7 +806,8 @@ function buildIsMap(): IsMap {
   const check = <K = unknown, V = unknown>(value: unknown): value is Map<K, V> =>
     brandedSize(mapSize, value) !== undefined;
 
-  check.empty = (value: unknown): boolean => brandedSize(mapSize, value) === 0;
+  check.empty = (value: unknown): value is Map<unknown, unknown> =>
+    brandedSize(mapSize, value) === 0;
 
   check.nonEmpty = (value: unknown): value is Map<unknown, unknown> => {
     const size = brandedSize(mapSize, value);
@@ -670,7 +822,7 @@ function buildIsSet(): IsSet {
   const check = <T = unknown>(value: unknown): value is Set<T> =>
     brandedSize(setSize, value) !== undefined;
 
-  check.empty = (value: unknown): boolean => brandedSize(setSize, value) === 0;
+  check.empty = (value: unknown): value is Set<unknown> => brandedSize(setSize, value) === 0;
 
   check.nonEmpty = (value: unknown): value is Set<unknown> => {
     const size = brandedSize(setSize, value);
@@ -727,8 +879,63 @@ const isPromise = buildIsPromise();
 const isTypedArray = (value: unknown): value is TypedArray =>
   typedArrayTag !== undefined && typedArrayTag.call(value) !== undefined;
 
-const IPV4 =
-  /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+// No leading zeros: `'01.1.1.1'` is rejected. `[01]?` in the classic pattern accepts them, and
+// inet_aton-style parsers treat those octets as octal — an allowlist bypass.
+const IPV4_OCTET = '(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)';
+const IPV4 = new RegExp(`^(?:${IPV4_OCTET}\\.){3}${IPV4_OCTET}$`);
+
+const HEXTET = /^[0-9a-f]{1,4}$/i;
+
+/** IPv4 with no leading zeros — shared by `is.ipv4` and the IPv4-mapped IPv6 tail. */
+const isIPv4String = (value: string): boolean => IPV4.test(value);
+
+/**
+ * Linear split/count IPv6 validator. Zone IDs are rejected. An IPv4-mapped tail is rewritten to two
+ * hextets so the 8-group budget stays uniform.
+ */
+const isIPv6String = (value: string): boolean => {
+  if (value.length === 0 || value.includes('%')) return false;
+
+  let addr = value;
+  const lastColon = addr.lastIndexOf(':');
+
+  if (lastColon !== -1) {
+    const tail = addr.slice(lastColon + 1);
+
+    if (tail.includes('.')) {
+      if (!isIPv4String(tail)) return false;
+
+      // An IPv4-mapped suffix consumes two hextets.
+      addr = `${addr.slice(0, lastColon)}:0:0`;
+    }
+  }
+
+  const sides = addr.split('::');
+
+  if (sides.length > 2) return false;
+
+  const parseSide = (side: string): string[] | null => {
+    if (side === '') return [];
+
+    const parts = side.split(':');
+
+    return parts.every((part) => HEXTET.test(part)) ? parts : null;
+  };
+
+  if (sides.length === 1) {
+    const parts = parseSide(sides[0]!);
+
+    return parts !== null && parts.length === 8;
+  }
+
+  const left = parseSide(sides[0]!);
+  const right = parseSide(sides[1]!);
+
+  if (left === null || right === null) return false;
+
+  // `::` must compress at least one zero hextet.
+  return left.length + right.length < 8;
+};
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -772,9 +979,11 @@ const is: Is = {
   empty(value: unknown): boolean {
     if (isNil(value)) return true;
     if (isString(value)) return isString.blank(value);
-    if (isArray(value)) return value.length === 0;
-    if (isTypedArray(value)) return value.length === 0;
-    if (isMap(value) || isSet(value)) return value.size === 0;
+    if (isArray(value)) return isArray.empty(value);
+    // Pristine length/size accessors — a hostile subclass getter must not throw out of is.empty.
+    if (isTypedArray(value)) return brandedSize(typedArrayLength, value) === 0;
+    if (brandedSize(mapSize, value) === 0) return true;
+    if (brandedSize(setSize, value) === 0) return true;
     // isObject is [object Object]-gated, so Date, RegExp, and Error fall through to false rather
     // than being reported empty merely for having no own enumerable keys.
     // A value that refuses to be inspected is not proven empty, so it is not empty.
@@ -785,6 +994,10 @@ const is: Is = {
 
   array: isArray,
   typedArray: isTypedArray,
+  arrayBuffer: (value: unknown): value is ArrayBuffer => hasBrand(arrayBufferByteLength, value),
+  dataView: (value: unknown): value is DataView => hasBrand(dataViewByteLength, value),
+  weakMap: (value: unknown): value is WeakMap<object, unknown> => hasMethodBrand(weakMapHas, value),
+  weakSet: (value: unknown): value is WeakSet<object> => hasMethodBrand(weakSetHas, value),
   string: isString,
   number: isNumber,
   numeric: isNumeric,
@@ -852,7 +1065,19 @@ const is: Is = {
   ipv4(value: unknown): boolean {
     if (typeof value !== 'string') return false;
 
-    return IPV4.test(value);
+    return isIPv4String(value);
+  },
+
+  ipv6(value: unknown): boolean {
+    if (typeof value !== 'string') return false;
+
+    return isIPv6String(value);
+  },
+
+  ip(value: unknown): boolean {
+    if (typeof value !== 'string') return false;
+
+    return isIPv4String(value) || isIPv6String(value);
   },
 
   uuid(value: unknown): boolean {
@@ -870,7 +1095,14 @@ const is: Is = {
   instanceOf<T>(ctor: abstract new (...args: never[]) => T): Guard<T> {
     // Fail fast. Letting `instanceof` throw would defer the TypeError to guard-call time, far from
     // the mistake — and this ships to plain-JS consumers, where the parameter type is unenforced.
-    if (typeof ctor !== 'function') {
+    // `typeof === 'function'` is not enough: arrow and bound functions pass it, then throw from
+    // `instanceof` because they have no object prototype. Checking the prototype here means the
+    // guard's catch cannot swallow a bad ctor into a silent forever-false.
+    if (
+      typeof ctor !== 'function' ||
+      ctor.prototype === null ||
+      typeof ctor.prototype !== 'object'
+    ) {
       throw new TypeError('is.instanceOf() expects a constructor');
     }
 
@@ -901,6 +1133,15 @@ const is: Is = {
   not(check: CheckFn): CheckFn {
     return (value: unknown) => !check(value);
   },
+
+  assert(value: unknown, check: CheckFn, message?: string): unknown {
+    if (!check(value)) {
+      throw new TypeError(message ?? 'is.assert() failed');
+    }
+
+    return value;
+  },
 };
 
+export { is };
 export default is;

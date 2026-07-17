@@ -1,3 +1,7 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
 //#region src/index.ts
 /**
 * @module
@@ -8,7 +12,8 @@
 *
 * @example
 * ```ts
-* import is from '@deebeetech/is-helper';
+* import is, { type Guard, type TypedArray } from '@deebeetech/is-helper';
+* // or: import { is } from '@deebeetech/is-helper';
 *
 * is.string('hello'); // true
 * is.number(42);      // true
@@ -54,7 +59,15 @@ const dateGetTime = Date.prototype.getTime;
 const regExpSource = Object.getOwnPropertyDescriptor(RegExp.prototype, "source")?.get;
 const mapSize = Object.getOwnPropertyDescriptor(Map.prototype, "size")?.get;
 const setSize = Object.getOwnPropertyDescriptor(Set.prototype, "size")?.get;
-const typedArrayTag = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(Int8Array.prototype), Symbol.toStringTag)?.get;
+const typedArrayPrototype = Object.getPrototypeOf(Int8Array.prototype);
+const typedArrayTag = Object.getOwnPropertyDescriptor(typedArrayPrototype, Symbol.toStringTag)?.get;
+const typedArrayLength = Object.getOwnPropertyDescriptor(typedArrayPrototype, "length")?.get;
+const arrayBufferByteLength = Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, "byteLength")?.get;
+const dataViewByteLength = Object.getOwnPropertyDescriptor(DataView.prototype, "byteLength")?.get;
+const weakMapHas = WeakMap.prototype.has;
+const weakSetHas = WeakSet.prototype.has;
+/** Native `Object` source, captured once — used by {@linkcode IsObject.plain} for a realm-independent prototype check. */
+const nativeObjectSource = Function.prototype.toString.call(Object);
 const hasBrand = (getter, value) => {
 	if (typeof getter !== "function") return false;
 	try {
@@ -64,10 +77,20 @@ const hasBrand = (getter, value) => {
 		return false;
 	}
 };
+const hasMethodBrand = (method, value) => {
+	if (typeof method !== "function") return false;
+	try {
+		method.call(value, {});
+		return true;
+	} catch {
+		return false;
+	}
+};
 const brandedSize = (getter, value) => {
 	if (typeof getter !== "function") return void 0;
 	try {
-		return getter.call(value);
+		const size = getter.call(value);
+		return typeof size === "number" ? size : void 0;
 	} catch {
 		return;
 	}
@@ -80,11 +103,29 @@ const brandedSize = (getter, value) => {
 const isNil = (value) => value === null || value === void 0;
 function buildIsArray() {
 	const check = (value) => isArraySafe(value);
-	check.empty = (value) => check(value) && value.length === 0;
-	check.nonEmpty = ((value) => check(value) && value.length > 0);
+	check.empty = (value) => {
+		if (!check(value)) return false;
+		try {
+			return value.length === 0;
+		} catch {
+			return false;
+		}
+	};
+	check.nonEmpty = ((value) => {
+		if (!check(value)) return false;
+		try {
+			return value.length > 0;
+		} catch {
+			return false;
+		}
+	});
 	check.of = ((itemCheck) => (value) => {
 		if (!check(value)) return false;
-		for (let i = 0; i < value.length; i++) if (!itemCheck(value[i])) return false;
+		try {
+			for (let i = 0; i < value.length; i++) if (!itemCheck(value[i])) return false;
+		} catch {
+			return false;
+		}
 		return true;
 	});
 	return check;
@@ -92,6 +133,7 @@ function buildIsArray() {
 function buildIsString() {
 	const check = (value) => typeof value === "string";
 	check.empty = (value) => check(value) && value.length === 0;
+	check.nonEmpty = (value) => check(value) && value.length > 0;
 	check.whitespace = (value) => check(value) && value.length > 0 && !/\S/.test(value);
 	check.blank = (value) => check.empty(value) || check.whitespace(value);
 	return check;
@@ -103,16 +145,23 @@ function buildIsNumber() {
 	check.positive = (value) => check.finite(value) && value > 0;
 	check.negative = (value) => check.finite(value) && value < 0;
 	check.nonNegative = (value) => check.finite(value) && value >= 0;
+	check.nonPositive = (value) => check.finite(value) && value <= 0;
 	check.integer = (value) => Number.isInteger(value);
 	check.positiveInteger = (value) => check.integer(value) && value > 0;
+	check.negativeInteger = (value) => check.integer(value) && value < 0;
+	check.nonNegativeInteger = (value) => check.integer(value) && value >= 0;
+	check.nonPositiveInteger = (value) => check.integer(value) && value <= 0;
 	check.safeInteger = (value) => Number.isSafeInteger(value);
 	return check;
 }
 /**
 * Shape validation only. `Number.isFinite` still does the magnitude check afterwards: `'1e999'`
 * matches this pattern but overflows to `Infinity`.
+*
+* The digit run is owned once (`\d+(?:\.\d*)?`) rather than `\d+\.?\d*`, which is quadratic under
+* rejection — the same class of bug the EMAIL pattern below was rewritten to avoid.
 */
-const NUMERIC_STRING = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
+const NUMERIC_STRING = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 function buildIsNumeric() {
 	const check = (value) => {
 		if (typeof value === "number") return Number.isFinite(value);
@@ -142,16 +191,24 @@ function buildIsBoolean() {
 		}
 		return value === 1;
 	};
+	check.parse = (value) => check.like(value) ? check.value(value) : void 0;
 	return check;
 }
 function buildIsObject() {
 	const check = (value) => value !== null && typeof value === "object" && objectTag(value) === "[object Object]";
 	check.empty = (value) => check(value) && ownKeyCount(value) === 0;
+	check.nonEmpty = (value) => {
+		const count = check(value) ? ownKeyCount(value) : void 0;
+		return count !== void 0 && count > 0;
+	};
 	check.plain = (value) => {
 		if (!check(value)) return false;
 		try {
 			const prototype = Object.getPrototypeOf(value);
-			return prototype === null || prototype === Object.prototype;
+			if (prototype === null) return true;
+			if (Object.getPrototypeOf(prototype) !== null) return false;
+			const ctor = prototype.constructor;
+			return typeof ctor === "function" && Function.prototype.toString.call(ctor) === nativeObjectSource;
 		} catch {
 			return false;
 		}
@@ -249,7 +306,42 @@ const isMap = buildIsMap();
 const isSet = buildIsSet();
 const isPromise = buildIsPromise();
 const isTypedArray = (value) => typedArrayTag !== void 0 && typedArrayTag.call(value) !== void 0;
-const IPV4 = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+const IPV4_OCTET = "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)";
+const IPV4 = new RegExp(`^(?:${IPV4_OCTET}\\.){3}${IPV4_OCTET}$`);
+const HEXTET = /^[0-9a-f]{1,4}$/i;
+/** IPv4 with no leading zeros — shared by `is.ipv4` and the IPv4-mapped IPv6 tail. */
+const isIPv4String = (value) => IPV4.test(value);
+/**
+* Linear split/count IPv6 validator. Zone IDs are rejected. An IPv4-mapped tail is rewritten to two
+* hextets so the 8-group budget stays uniform.
+*/
+const isIPv6String = (value) => {
+	if (value.length === 0 || value.includes("%")) return false;
+	let addr = value;
+	const lastColon = addr.lastIndexOf(":");
+	if (lastColon !== -1) {
+		const tail = addr.slice(lastColon + 1);
+		if (tail.includes(".")) {
+			if (!isIPv4String(tail)) return false;
+			addr = `${addr.slice(0, lastColon)}:0:0`;
+		}
+	}
+	const sides = addr.split("::");
+	if (sides.length > 2) return false;
+	const parseSide = (side) => {
+		if (side === "") return [];
+		const parts = side.split(":");
+		return parts.every((part) => HEXTET.test(part)) ? parts : null;
+	};
+	if (sides.length === 1) {
+		const parts = parseSide(sides[0]);
+		return parts !== null && parts.length === 8;
+	}
+	const left = parseSide(sides[0]);
+	const right = parseSide(sides[1]);
+	if (left === null || right === null) return false;
+	return left.length + right.length < 8;
+};
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 /**
@@ -282,14 +374,19 @@ const is = {
 	empty(value) {
 		if (isNil(value)) return true;
 		if (isString(value)) return isString.blank(value);
-		if (isArray(value)) return value.length === 0;
-		if (isTypedArray(value)) return value.length === 0;
-		if (isMap(value) || isSet(value)) return value.size === 0;
+		if (isArray(value)) return isArray.empty(value);
+		if (isTypedArray(value)) return brandedSize(typedArrayLength, value) === 0;
+		if (brandedSize(mapSize, value) === 0) return true;
+		if (brandedSize(setSize, value) === 0) return true;
 		if (isObject(value)) return ownKeyCount(value) === 0;
 		return false;
 	},
 	array: isArray,
 	typedArray: isTypedArray,
+	arrayBuffer: (value) => hasBrand(arrayBufferByteLength, value),
+	dataView: (value) => hasBrand(dataViewByteLength, value),
+	weakMap: (value) => hasMethodBrand(weakMapHas, value),
+	weakSet: (value) => hasMethodBrand(weakSetHas, value),
 	string: isString,
 	number: isNumber,
 	numeric: isNumeric,
@@ -326,7 +423,15 @@ const is = {
 	},
 	ipv4(value) {
 		if (typeof value !== "string") return false;
-		return IPV4.test(value);
+		return isIPv4String(value);
+	},
+	ipv6(value) {
+		if (typeof value !== "string") return false;
+		return isIPv6String(value);
+	},
+	ip(value) {
+		if (typeof value !== "string") return false;
+		return isIPv4String(value) || isIPv6String(value);
 	},
 	uuid(value) {
 		if (typeof value !== "string") return false;
@@ -337,7 +442,7 @@ const is = {
 		return EMAIL.test(value);
 	},
 	instanceOf(ctor) {
-		if (typeof ctor !== "function") throw new TypeError("is.instanceOf() expects a constructor");
+		if (typeof ctor !== "function" || ctor.prototype === null || typeof ctor.prototype !== "object") throw new TypeError("is.instanceOf() expects a constructor");
 		return (value) => {
 			try {
 				return value instanceof ctor;
@@ -357,9 +462,14 @@ const is = {
 	},
 	not(check) {
 		return (value) => !check(value);
+	},
+	assert(value, check, message) {
+		if (!check(value)) throw new TypeError(message ?? "is.assert() failed");
+		return value;
 	}
 };
 //#endregion
-module.exports = is;
+exports.default = is;
+exports.is = is;
 
 //# sourceMappingURL=index.cjs.map

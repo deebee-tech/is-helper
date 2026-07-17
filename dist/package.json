@@ -4,30 +4,33 @@
   "description": "A collection of \"is\"-style helpers to help solidify if something \"is\" something else. Has no dependencies and uses only raw JavaScript methodology.",
   "homepage": "https://github.com/deebee-tech/is-helper",
   "license": "MIT",
-  "private": false,
   "author": {
     "name": "Sandy Weatherby",
     "email": "unicornbeachdiaries@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/deebee-tech/is-helper"
+    "url": "git+https://github.com/deebee-tech/is-helper.git"
   },
   "type": "module",
-  "main": "index.cjs",
+  "main": "dist/index.cjs",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.mts",
-        "default": "./index.mjs"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
-        "types": "./index.d.cts",
-        "default": "./index.cjs"
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       }
     }
   },
-  "types": "index.d.mts",
+  "types": "dist/index.d.mts",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -35,44 +38,13 @@
     "is",
     "helper",
     "type",
+    "type guard",
+    "type-guard",
     "check",
     "checkers",
     "type-check",
     "type-checker",
     "type-checkers",
     "type-checking"
-  ],
-  "scripts": {
-    "build": "tsdown && cpy './package.json' './dist/' && cpy './README.md' './dist/' && cpy './CHANGELOG.md' './dist/' && cpy './LICENSE' './dist/'",
-    "format": "prettier --write .",
-    "lint": "eslint .",
-    "spell": "cspell --no-progress \"**\"",
-    "test": "vitest --coverage",
-    "typecheck": "tsc --noEmit"
-  },
-  "packageManager": "pnpm@10.33.0",
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@sebbo2002/semantic-release-jsr": "^4.0.2",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/commit-analyzer": "^13.0.1",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^12.0.9",
-    "@semantic-release/npm": "^13.1.5",
-    "@semantic-release/release-notes-generator": "^14.1.1",
-    "@types/node": "^26.1.1",
-    "@vitest/coverage-v8": "^4.1.10",
-    "conventional-changelog-conventionalcommits": "^10.2.1",
-    "cpy-cli": "^7.0.0",
-    "cspell": "^10.0.1",
-    "eslint": "^10.7.0",
-    "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.9.5",
-    "semantic-release": "^25.0.7",
-    "semantic-release-replace-plugin": "^1.2.7",
-    "tsdown": "^0.22.7",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.64.0",
-    "vitest": "^4.1.10"
-  }
+  ]
 }
