@@ -102,7 +102,7 @@ export default {
     [
       '@semantic-release/git',
       {
-        assets: ['CHANGELOG.md', 'package.json', 'jsr.json', 'dist/**/*', 'coverage/**/*'],
+        assets: ['CHANGELOG.md', 'package.json', 'jsr.json', 'dist/**/*'],
       },
     ],
     // Registries BEFORE the GitHub release: on SQLEasy's 2.0.0 the GitHub plugin crashed uploading

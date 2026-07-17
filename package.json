@@ -4,14 +4,13 @@
   "description": "A collection of \"is\"-style helpers to help solidify if something \"is\" something else. Has no dependencies and uses only raw JavaScript methodology.",
   "homepage": "https://github.com/deebee-tech/is-helper",
   "license": "MIT",
-  "private": false,
   "author": {
     "name": "Sandy Weatherby",
     "email": "unicornbeachdiaries@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/deebee-tech/is-helper"
+    "url": "git+https://github.com/deebee-tech/is-helper.git"
   },
   "type": "module",
   "main": "dist/index.cjs",
@@ -28,6 +27,13 @@
     }
   },
   "types": "dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -35,6 +41,8 @@
     "is",
     "helper",
     "type",
+    "type guard",
+    "type-guard",
     "check",
     "checkers",
     "type-check",
@@ -43,8 +51,9 @@
     "type-checking"
   ],
   "scripts": {
-    "build": "tsdown && cpy './package.json' './dist/' && cpy './README.md' './dist/' && cpy './CHANGELOG.md' './dist/' && cpy './LICENSE' './dist/'",
-    "format": "prettier --write .",
+    "build": "tsdown && cpy './package.json' './dist/' && cpy './README.md' './dist/' && cpy './CHANGELOG.md' './dist/' && cpy './LICENSE' './dist/' && node ./scripts/prepare-dist-package.mjs",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
     "lint": "eslint .",
     "spell": "cspell --no-progress \"**\"",
     "test": "vitest --coverage",

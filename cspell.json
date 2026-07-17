@@ -11,9 +11,14 @@
     "deebeetech",
     "esbuild",
     "forgeable",
+    "hextet",
+    "hextets",
     "iterables",
+    "Michroma",
     "regexp",
     "sebbo",
+    "Segoe",
+    "spoofability",
     "spoofable",
     "thenable",
     "tsbuildinfo",
@@ -22,5 +27,13 @@
     "unspoofable",
     "Weatherby"
   ],
-  "ignorePaths": ["node_modules", "dist", "coverage", "pnpm-lock.yaml", "**/*.map"]
+  "ignorePaths": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "pnpm-lock.yaml",
+    "**/*.map",
+    ".scratch-*",
+    "tmp"
+  ]
 }
