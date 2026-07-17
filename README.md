@@ -35,6 +35,7 @@ deno add jsr:@deebeetech/is-helper
 
 ```typescript
 import is from '@deebeetech/is-helper';
+// or: import { is } from '@deebeetech/is-helper';
 ```
 
 ### Null, undefined, and friends
@@ -78,6 +79,7 @@ is.string('hello'); // true
 is.string(42); // false
 
 is.string.empty(''); // true
+is.string.nonEmpty('a'); // true
 is.string.whitespace('   '); // true  — non-empty, all whitespace
 is.string.blank('   '); // true  — empty OR whitespace-only
 ```
@@ -97,8 +99,12 @@ is.number.nan('abc'); // false — does not coerce, unlike the global isNaN
 is.number.positive(5); // true
 is.number.negative(-1); // true
 is.number.nonNegative(0); // true
+is.number.nonPositive(0); // true
 is.number.integer(7); // true
 is.number.positiveInteger(3); // true
+is.number.negativeInteger(-3); // true
+is.number.nonNegativeInteger(0); // true
+is.number.nonPositiveInteger(0); // true
 is.number.safeInteger(2 ** 53); // false — beyond MAX_SAFE_INTEGER
 ```
 
@@ -139,6 +145,7 @@ is.boolean.like('maybe'); // false
 is.boolean.value('yes'); // true
 is.boolean.value('no'); // false
 is.boolean.value('0'); // false
+is.boolean.parse('maybe'); // undefined — unlike .value, unrecognized is not collapsed to false
 ```
 
 ### Arrays
@@ -157,7 +164,11 @@ is.array.of(is.string)(['a', 'b']); // true
 is.array.of(is.string)(['a', 1]); // false
 
 is.typedArray(new Uint8Array(4)); // true
-is.typedArray(new DataView(buffer)); // false
+is.typedArray(new DataView(new ArrayBuffer(8))); // false
+is.arrayBuffer(new ArrayBuffer(8)); // true
+is.dataView(new DataView(new ArrayBuffer(8))); // true
+is.weakMap(new WeakMap()); // true
+is.weakSet(new WeakSet()); // true
 ```
 
 ### Objects
@@ -168,8 +179,10 @@ is.object([1, 2]); // false
 is.object(new Map()); // false — Map has its own check
 
 is.object.empty({}); // true
-is.object.plain(Object.create(null)); // true
-is.object.plain(new (class Foo {})()); // false — a class instance is not plain
+is.object.nonEmpty({ a: 1 }); // true
+is.object.plain(Object.create(null)); // true — null-prototype or Object.prototype dictionaries
+is.object.plain(new (class Foo {})()); // false — class instances are not plain
+is.object(new (class Foo {})()); // true — class instances still pass the broader object check
 
 is.object.of(is.number)({ a: 1, b: 2 }); // true
 ```
@@ -250,7 +263,7 @@ is.promise.like({ then() {} }); // true  — thenable, which is what `await` car
 
 is.iterable([1, 2]); // true
 is.iterable('abc'); // true  — strings are iterable, per spec
-is.asyncIterable(stream); // true
+is.asyncIterable((async function* () {})()); // true
 ```
 
 For "a collection, but not a string", compose: `is.all(is.iterable, is.not(is.string))`.
@@ -272,14 +285,17 @@ is.primitive(new Date()); // false
 
 ```typescript
 is.ipv4('192.168.1.1'); // true
+is.ipv4('01.1.1.1'); // false — leading zeros rejected
+is.ipv6('2001:db8::1'); // true
+is.ip('::1'); // true — IPv4 or IPv6
 is.uuid('01912d68-783e-7c3e-9c8e-5a1b2c3d4e5f'); // true — RFC 9562, v1–v8
 is.email('sandy@example.com'); // true
 ```
 
 ### Combinators
 
-`is.any`, `is.all`, and `is.not` compose checks into reusable validators — and, unlike most such
-helpers, they **preserve narrowing**.
+`is.any`, `is.all`, `is.not`, and `is.assert` compose checks into reusable validators — and, unlike
+most such helpers, they **preserve narrowing**.
 
 ```typescript
 const isStringOrNumber = is.any(is.string, is.number);
@@ -288,6 +304,8 @@ isStringOrNumber('hello'); // true
 const isNonBlankString = is.all(is.string, is.not(is.string.blank));
 isNonBlankString('hi'); // true
 isNonBlankString('   '); // false
+
+const name = is.assert(value as unknown, is.string); // throws TypeError if not a string
 ```
 
 ```typescript
@@ -300,10 +318,14 @@ function label(value: unknown) {
 ```
 
 `is.all` yields the **intersection**. A plain boolean-returning check (`is.ipv4`, `is.string.blank`)
-contributes `unknown`, so it constrains at runtime without weakening the guards beside it.
+contributes `unknown`, so it constrains at runtime without weakening the guards beside it. With
+**zero** checks, `is.all()` is vacuously `true` for every value — compose deliberately.
 
 `is.not` **widens** — `is.not(is.string.blank)` is true for `42`, `{}`, and `null`, since those are
 all "not a blank string". Pair it with `is.all` to keep the type pinned down, as above.
+
+`is.assert` is the library's one intentional throw: it returns the value narrowed by `check`, or
+throws `TypeError`.
 
 ### Guard factories
 
@@ -334,6 +356,28 @@ They also compose with `filter`, narrowing the array's element type:
 ```typescript
 const values: unknown[] = [1, 'a', null, 'b'];
 const strings: string[] = values.filter(is.string);
+```
+
+### Named type exports
+
+The package also exports the type-level building blocks used by the guards:
+
+| Export       | Meaning                                                                |
+| ------------ | ---------------------------------------------------------------------- |
+| `Is`         | Shape of the `is` helper object                                        |
+| `IsArray` …  | Namespace interfaces (`IsString`, `IsNumber`, `IsObject`, …)           |
+| `Guard<T>`   | `(value: unknown) => value is T`                                       |
+| `CheckFn`    | `(value: unknown) => boolean`                                          |
+| `Guarded<G>` | Extracts `T` from a `Guard<T>` (plain `CheckFn` → `unknown`)           |
+| `GuardedAll` | Intersection fold used by `is.all`                                     |
+| `AnyFn`      | Callable + constructable function top type                             |
+| `Primitive`  | `string \| number \| bigint \| boolean \| symbol \| null \| undefined` |
+| `TypedArray` | Union of typed-array instance types (includes `Float16Array`)          |
+
+```typescript
+import is, { type Guard, type TypedArray } from '@deebeetech/is-helper';
+
+const isStringList: Guard<string[]> = is.array.of(is.string);
 ```
 
 ## Migrating from v3
