@@ -81,7 +81,7 @@
     "semantic-release-replace-plugin": "^1.2.7",
     "tsdown": "^0.22.9",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.64.0",
+    "typescript-eslint": "^8.65.0",
     "vitest": "^4.1.10"
   }
 }
